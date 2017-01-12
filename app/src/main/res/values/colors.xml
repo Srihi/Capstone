@@ -3,4 +3,25 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="colorRipple">#99FFFFFF</color>
+
+    <color name="colorBlue700">#1976D2</color>
+    <color name="colorBlue500">#2196F3</color>
+
+    <color name="colorRed700">#D32F2F</color>
+    <color name="colorRed500">#F44336</color>
+
+    <color name="colorGreen700">#388E3C</color>
+    <color name="colorGreen500">#4CAF50</color>
+
+    <color name="fabLabelsColorNormal">#333333</color>
+    <color name="fabLabelsColorPressed">#444444</color>
+    <color name="fabLabelsColorRipple">#66FFFFFF</color>
+    <color name="fabLabelsTextColor">#FFFFFF"</color>
+
+    <color name="fabShadowColor">#66000000"</color>
+
+
+
 </resources>

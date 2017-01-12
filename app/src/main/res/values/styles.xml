@@ -17,4 +17,44 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="FabCommon">
+        <item name="fab_size">mini</item>
+        <item name="elevation">4dp</item>
+        <item name="fab_colorRipple">@color/colorRipple</item>
+    </style>
+
+    <style name="FabStyleTransfer" parent="FabCommon">
+        <item name="fab_colorNormal">@color/colorBlue700</item>
+        <item name="fab_colorPressed">@color/colorBlue500</item>
+    </style>
+
+    <style name="FabStyleIncome" parent="FabCommon">
+        <item name="fab_colorNormal">@color/colorGreen700</item>
+        <item name="fab_colorPressed">@color/colorGreen500</item>
+    </style>
+
+    <style name="FabStyleExpenses" parent="FabCommon">
+        <item name="fab_colorNormal">@color/colorRed700</item>
+        <item name="fab_colorPressed">@color/colorRed500</item>
+    </style>
+
+    <style name="MenuLabelsStyle">
+        <item name="menu_labels_paddingTop">4dp</item>
+        <item name="menu_labels_paddingRight">8dp</item>
+        <item name="menu_labels_paddingBottom">4dp</item>
+        <item name="menu_labels_paddingLeft">8dp</item>
+        <item name="menu_labels_padding">8dp</item>
+        <item name="menu_labels_textColor">#FFFFFF</item>
+        <item name="menu_labels_textSize">14sp</item>
+        <item name="menu_labels_cornerRadius">3dp</item>
+        <item name="menu_labels_colorNormal">#333333</item>
+        <item name="menu_labels_colorPressed">#444444</item>
+        <item name="menu_labels_colorRipple">#66FFFFFF</item>
+        <item name="menu_labels_showShadow">true</item>
+        <item name="menu_labels_singleLine">false</item>
+        <item name="menu_labels_ellipsize">none</item>
+        <item name="menu_labels_maxLines">-1</item>
+        <item name="menu_labels_position">left</item>
+    </style>
+
 </resources>
