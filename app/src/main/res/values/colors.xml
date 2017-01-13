@@ -18,9 +18,9 @@
     <color name="fabLabelsColorNormal">#333333</color>
     <color name="fabLabelsColorPressed">#444444</color>
     <color name="fabLabelsColorRipple">#66FFFFFF</color>
-    <color name="fabLabelsTextColor">#FFFFFF"</color>
+    <color name="fabLabelsTextColor">#FFFFFF</color>
 
-    <color name="fabShadowColor">#66000000"</color>
+    <color name="fabShadowColor">#66000000</color>
 
 
 
