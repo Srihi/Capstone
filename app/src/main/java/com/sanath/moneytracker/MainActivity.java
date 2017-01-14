@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import com.sanath.moneytracker.ui.fragments.AccountsFragment;
 import com.sanath.moneytracker.ui.fragments.CategoriesFragment;
+import com.sanath.moneytracker.ui.fragments.SummaryFragment;
 import com.sanath.moneytracker.ui.fragments.TransactionsFragment;
 
 public class MainActivity extends AppCompatActivity
@@ -92,6 +93,9 @@ public class MainActivity extends AppCompatActivity
                             switch (id) {
                                 case R.id.nav_transactions:
                                     fragment = TransactionsFragment.newInstance();
+                                    break;
+                                case R.id.nav_summary:
+                                    fragment = SummaryFragment.newInstance();
                                     break;
                                 case R.id.nav_accounts:
                                     fragment = AccountsFragment.newInstance();
