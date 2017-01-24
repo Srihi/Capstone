@@ -19,7 +19,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activities.AddAccountActivity"></activity>
+        <activity android:name=".ui.activities.AddAccountActivity" />
+
+        <provider
+            android:name=".data.DataProvider"
+            android:authorities="com.sanath.moneytracker"
+            android:enabled="false"
+            android:exported="false"></provider>
     </application>
 
 </manifest>

@@ -22,6 +22,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
+            android:id="@+id/editTextAccountName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Name" />
@@ -41,6 +42,7 @@
         app:layout_constraintHorizontal_bias="0.0">
 
         <EditText
+            android:id="@+id/editTextBalance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Initial Balance"
