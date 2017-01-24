@@ -1,5 +1,6 @@
 package com.sanath.moneytracker.ui.activities;
 
+import android.content.ContentValues;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,6 +8,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.sanath.moneytracker.R;
+import com.sanath.moneytracker.data.DataContract;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,7 +48,17 @@ public class AddAccountActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        if(id == R.id.ic_action_done){
+            saveAccount();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void saveAccount() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DataContract.AccountEntry.COLUMN_NAME,editTextAccountName.getText().toString().trim());
+        contentValues.put(DataContract.AccountEntry.COLUMN_TYPE, DataContract.AccountTypes.TRANSFER);
+        getContentResolver().insert(DataContract.AccountEntry.CONTENT_URI,contentValues);
     }
 }

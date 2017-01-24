@@ -62,7 +62,7 @@ public class DataProvider extends ContentProvider {
         int match = uriMatcher.match(uri);
         Uri returnUri;
         switch (match) {
-            case ACCOUNT: {
+            case ACCOUNTS: {
                 long id = database.insert(AccountEntry.TABLE_NAME, null, values);
                 if (id > 0) {
                     returnUri = AccountEntry.buildAccountUri(id);

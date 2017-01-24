@@ -22,11 +22,11 @@ public class DataHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         final String CREATE_ACCOUNT_TABLE = "create table " + AccountEntry.TABLE_NAME + " ( " +
-                AccountEntry._ID + "INTEGER PRIMARY KEY AUTOINCREMENT," +
-                AccountEntry.COLUMN_NAME + "TEXT NOT NULL, " +
-                AccountEntry.COLUMN_TYPE + "INTEGER NOT NULL, " +
-                AccountEntry.COLUMN_ICON + "INTEGER, " +
-                AccountEntry.COLUMN_COLOR + "INTEGER " +
+                AccountEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                AccountEntry.COLUMN_NAME + " TEXT NOT NULL, " +
+                AccountEntry.COLUMN_TYPE + " INTEGER NOT NULL, " +
+                AccountEntry.COLUMN_ICON + " INTEGER, " +
+                AccountEntry.COLUMN_COLOR + " INTEGER " +
                 ")";
         db.execSQL(CREATE_ACCOUNT_TABLE);
 

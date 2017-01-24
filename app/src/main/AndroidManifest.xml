@@ -24,9 +24,9 @@
 
         <provider
             android:name=".data.DataProvider"
-            android:authorities="com.sanath.moneytracker"
-            android:enabled="false"
-            android:exported="false"></provider>
+            android:authorities="com.sanath.moneytracker.data.DataProvider"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>
