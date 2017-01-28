@@ -43,7 +43,7 @@
         app:layout_constraintGuide_end="344dp" />
 
     <TextView
-        android:id="@+id/editText"
+        android:id="@+id/textViewAccountName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
@@ -64,20 +64,20 @@
         tools:text="Commercial Bank" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textViewBalance"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:text="RS 2000"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="@+id/guideline2"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp"
         app:layout_constraintVertical_bias="0.65999997" />
 </android.support.constraint.ConstraintLayout>
