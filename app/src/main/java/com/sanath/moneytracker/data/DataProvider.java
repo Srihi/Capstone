@@ -47,8 +47,8 @@ public class DataProvider extends ContentProvider {
                 return AccountEntry.CONTENT_ITEM_TYPE;
             case ACCOUNTS:
                 return AccountEntry.CONTENT_TYPE;
-            case ACCOUNTS_BY_TYPE:
-                return AccountEntry.CONTENT_TYPE;
+           /* case ACCOUNTS_BY_TYPE:
+                return AccountEntry.CONTENT_TYPE;*/
             default:
                 throw new UnsupportedOperationException("Unknown Uri : " + uri);
         }
@@ -87,8 +87,19 @@ public class DataProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-
-        throw new UnsupportedOperationException("Not yet implemented");
+        final SQLiteDatabase database = dataHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        Cursor cursor;
+        switch (match) {
+            case ACCOUNTS: {
+                cursor = database.query(AccountEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+            }
+            break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri" + uri);
+        }
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
     }
 
     @Override

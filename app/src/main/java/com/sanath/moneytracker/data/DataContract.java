@@ -48,6 +48,7 @@ public class DataContract {
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_COLOR = "color";
         public static final String COLUMN_ICON = "icon";
+        public static final String COLUMN_BALANCE = "balance";
 
 
         public static Uri buildAccountUri(long id) {
