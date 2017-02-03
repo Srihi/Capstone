@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             //load initial fragment and select menu item
-            replaceFragment(TransactionsFragment.newInstance());
-            navigationView.getMenu().getItem(0).setChecked(true);
+            replaceFragment(AccountsFragment.newInstance());
+            navigationView.getMenu().getItem(2).setChecked(true);
         }
 
     }

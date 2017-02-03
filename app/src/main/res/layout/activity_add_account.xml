@@ -55,6 +55,7 @@
         android:layout_height="48dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
+        android:padding="8dp"
         android:layout_gravity="start|center_vertical"
         android:scaleType="fitXY"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -63,15 +64,16 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutAccountBalance"
         android:id="@+id/buttonIconSelector" />
 
-    <net.steamcrafted.materialiconlib.MaterialIconView
+    <ImageView
         android:id="@+id/buttonColorSelector"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
+        android:padding="8dp"
+        android:layout_gravity="start|center_vertical"
+        android:scaleType="fitXY"
+        android:background="@drawable/gray_circle"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayoutAccountBalance"
-        app:materialIcon="checkbox_blank_circle"
-        app:materialIconColor="#000"
-        app:materialIconSize="24dp"
         app:layout_constraintLeft_toRightOf="@+id/buttonIconSelector"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp" />

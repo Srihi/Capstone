@@ -2,13 +2,11 @@ package com.sanath.moneytracker.ui.activities;
 
 import android.content.ContentValues;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +21,6 @@ import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.data.DataContract;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
-import net.steamcrafted.materialiconlib.MaterialIconView;
 
 import java.util.ArrayList;
 
@@ -43,7 +40,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     @BindView(R.id.buttonIconSelector)
     ImageView buttonIconSelector;
     @BindView(R.id.buttonColorSelector)
-    MaterialIconView buttonColorSelector;
+    ImageView buttonColorSelector;
 
 
     private MaterialSimpleListAdapter adapter;
@@ -56,8 +53,8 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
         unbinder = ButterKnife.bind(this);
-
         fillDrawableCache();
+        setIconSelectorColor();
         addDefaultIcon();
 
         buttonColorSelector.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +74,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
                 Log.d(TAG, "onMaterialListItemSelected() called with: dialog = [" + dialog + "], index = [" + index + "], item = [" + item + "]");
                 dialog.dismiss();
                 MaterialDrawableBuilder builder = drawableCache.get(index);
-                setIconAndColor(builder, selectedColor);
+                setIconAndColor(builder, AddAccountActivity.this.buttonIconSelector);
                 buttonIconSelector.setTag(builder);
             }
         });
@@ -87,6 +84,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
         buttonIconSelector.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addAccountIcons(adapter);
                 showIconSelectorDialog();
             }
         });
@@ -95,7 +93,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
 
     private void addDefaultIcon() {
         MaterialDrawableBuilder builder = drawableCache.get(0);
-        setIconAndColor(builder, selectedColor);
+        setIconAndColor(builder, buttonIconSelector);
         buttonIconSelector.setTag(builder);
     }
 
@@ -121,7 +119,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     }
 
     private void addAccountIcons(MaterialSimpleListAdapter adapter) {
-
+        adapter.clear();
         adapter.add(new MaterialSimpleListItem.Builder(this)
                 .icon(drawableCache.get(0).setColor(selectedColor).build())
                 .content("Bank")
@@ -177,16 +175,20 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     public void onColorSelection(@NonNull ColorChooserDialog dialog, @ColorInt int selectedColor) {
         MaterialDrawableBuilder builder = (MaterialDrawableBuilder) buttonIconSelector.getTag();
         this.selectedColor = selectedColor;
-        setIconAndColor(builder, selectedColor);
+        setIconAndColor(builder, buttonIconSelector);
+        setIconSelectorColor();
     }
 
-    private void setIconAndColor(MaterialDrawableBuilder builder, int selectedColor) {
+    private void setIconSelectorColor() {
+        MaterialDrawableBuilder builder = MaterialDrawableBuilder.with(this) // provide a context
+                .setIcon(MaterialDrawableBuilder.IconValue.CHECKBOX_BLANK_CIRCLE)
+                .setToActionbarSize();
+        setIconAndColor(builder, buttonColorSelector);
+
+    }
+
+    private void setIconAndColor(MaterialDrawableBuilder builder, ImageView imageView) {
         builder.setColor(selectedColor);
-        buttonIconSelector.setImageDrawable(builder.build());
-        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
-                getResources().getDisplayMetrics());
-        buttonIconSelector.setPadding(padding, padding, padding, padding);
-        buttonIconSelector.getBackground().setColorFilter(Color.GRAY,
-                PorterDuff.Mode.SRC_ATOP);
+        imageView.setImageDrawable(builder.build());
     }
 }
