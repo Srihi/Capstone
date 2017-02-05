@@ -1,6 +1,10 @@
 package com.sanath.moneytracker.common;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
@@ -14,5 +18,15 @@ public class Utils {
                 .setIcon(MaterialDrawableBuilder.IconValue.values()[icon])
                 .setToActionbarSize()
                 .setColor(selectedColor);
+    }
+
+    public static void setBackgroundColor(Drawable background, int color) {
+        if (background instanceof ShapeDrawable) {
+            ((ShapeDrawable) background).getPaint().setColor(color);
+        } else if (background instanceof GradientDrawable) {
+            ((GradientDrawable) background).setColor(color);
+        } else if (background instanceof ColorDrawable) {
+            ((ColorDrawable) background).setColor(color);
+        }
     }
 }

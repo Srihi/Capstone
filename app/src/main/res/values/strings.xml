@@ -20,4 +20,15 @@
     <string name="initial_balance">Initial Balance</string>
     <string name="name">Name</string>
     <string name="title_dialog_account_color">Select Account Color</string>
+    <string name="expenses">Expenses</string>
+    <string name="income">Income</string>
+    <string name="title_dialog_category_color">Select Color</string>
+    <string name="activity_title_add_income">Add Income Category</string>
+    <string name="activity_title_add_expense">Add Expense Category</string>
+    <string name="activity_title_add_account">Add Account</string>
+    <string name="dialog_title_account_icon">Select Account Icon</string>
+    <string name="account_bank">Bank</string>
+    <string name="account_wallet">Wallet</string>
+    <string name="account_other">Other</string>
+    <string name="dialog_title_categoty_icon">Select Category Icon</string>
 </resources>

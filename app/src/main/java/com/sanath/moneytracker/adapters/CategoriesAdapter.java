@@ -21,29 +21,29 @@ import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
  * Created by sanathnandasiri on 2/4/17.
  */
 
-public class AccountsAdapter extends CursorRecyclerAdapter<AccountsVH> {
+public class CategoriesAdapter extends CursorRecyclerAdapter<CategoriesVH> {
 
     private final Context context;
 
-    public AccountsAdapter(Context context, Cursor c) {
+    public CategoriesAdapter(Context context, Cursor c) {
         super(c);
         this.context = context;
     }
 
     @Override
-    public void onBindViewHolder(AccountsVH holder, Cursor cursor) {
-        holder.textViewAccountName.setText(cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME)));
+    public void onBindViewHolder(CategoriesVH holder, Cursor cursor) {
+        holder.textViewCategoryName.setText(cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME)));
         int icon = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_ICON));
         int selectedColor = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_COLOR));
         MaterialDrawableBuilder builder = Utils.getMaterialDrawableBuilder(context, icon, Color.WHITE);
-        holder.imageViewAccountIcon.setImageDrawable(builder.build());
-        Drawable background = holder.imageViewAccountIcon.getBackground();
-        Utils.setBackgroundColor(background, selectedColor);
+        holder.imageViewCategoryIcon.setImageDrawable(builder.build());
+        Drawable background = holder.imageViewCategoryIcon.getBackground();
+        Utils.setBackgroundColor(background,selectedColor);
     }
 
     @Override
-    public AccountsVH onCreateViewHolder(ViewGroup parent, int viewType) {
-        View root = LayoutInflater.from(context).inflate(R.layout.list_item_account, parent, false);
-        return new AccountsVH(root);
+    public CategoriesVH onCreateViewHolder(ViewGroup parent, int viewType) {
+        View root = LayoutInflater.from(context).inflate(R.layout.list_item_category, parent, false);
+        return new CategoriesVH(root);
     }
 }

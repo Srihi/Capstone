@@ -1,9 +1,9 @@
 package com.sanath.moneytracker.ui.fragments;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +20,8 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.adapters.AccountsAdapter;
 import com.sanath.moneytracker.data.DataContract;
+import com.sanath.moneytracker.data.DataContract.AccountEntry;
+import com.sanath.moneytracker.data.DataContract.AccountTypes;
 import com.sanath.moneytracker.ui.activities.AddAccountActivity;
 
 import butterknife.BindView;
@@ -34,7 +36,6 @@ public class AccountsFragment extends Fragment implements LoaderManager.LoaderCa
     private static final int REQUEST_CODE_ADD_ACCOUNT = 0x000001;
     private static final int ACCOUNT_LOADER = 0x000002;
 
-    public static AccountsFragment fragment;
     private Unbinder unbinder;
 
     @BindView(R.id.recyclerView)
@@ -46,8 +47,7 @@ public class AccountsFragment extends Fragment implements LoaderManager.LoaderCa
 
 
     public static AccountsFragment newInstance() {
-        fragment = new AccountsFragment();
-        return fragment;
+        return new AccountsFragment();
     }
 
     public AccountsFragment() {
@@ -96,12 +96,16 @@ public class AccountsFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), DataContract.AccountEntry.CONTENT_URI, null, null, null, null);
+        return new CursorLoader(getActivity(), AccountEntry.CONTENT_URI, null,
+                AccountEntry.COLUMN_TYPE + " =?",
+                new String[]{String.valueOf(AccountTypes.TRANSFER)},
+                null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         accountsAdapter.swapCursor(data);
+        DatabaseUtils.dumpCursor(data);
     }
 
     @Override

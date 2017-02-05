@@ -21,12 +21,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activities.AddAccountActivity" />
+        <activity android:name=".ui.activities.AddCategoryActivity" />
 
         <provider
             android:name=".data.DataProvider"
             android:authorities="com.sanath.moneytracker.data.DataProvider"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
     </application>
 
 </manifest>

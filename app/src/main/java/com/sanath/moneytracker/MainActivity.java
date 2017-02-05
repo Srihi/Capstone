@@ -116,15 +116,19 @@ public class MainActivity extends AppCompatActivity
                             switch (id) {
                                 case R.id.nav_transactions:
                                     fragment = TransactionsFragment.newInstance();
+                                    setTitle(R.string.title_nav_transactions);
                                     break;
                                 case R.id.nav_summary:
                                     fragment = SummaryFragment.newInstance();
+                                    setTitle(R.string.title_nav_summary);
                                     break;
                                 case R.id.nav_accounts:
                                     fragment = AccountsFragment.newInstance();
+                                    setTitle(R.string.title_nav_accounts);
                                     break;
                                 case R.id.nav_categories:
                                     fragment = CategoriesFragment.newInstance();
+                                    setTitle(R.string.title_nav_categories);
                                     break;
                             }
                             replaceFragment(fragment);
@@ -140,6 +144,10 @@ public class MainActivity extends AppCompatActivity
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void setTitle(int titleId) {
+        toolbar.setTitle(getString(titleId));
     }
 
     private void replaceFragment(Fragment fragment) {
