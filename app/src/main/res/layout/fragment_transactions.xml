@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,6 +6,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.sanath.moneytracker.ui.fragments.TransactionsFragment">
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/menu"
@@ -51,7 +57,7 @@
         app:menu_showShadow="true">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_item_transaction"
+            android:id="@+id/menuItemIncome"
             style="@style/FabStyleIncome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,7 +65,7 @@
             app:fab_label="@string/fab_menu_title_income" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_item_transfer"
+            android:id="@+id/menuItemTransfer"
             style="@style/FabStyleTransfer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +73,7 @@
             app:fab_label="@string/fab_menu_title_transfer" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_item_expenses"
+            android:id="@+id/menuItemExpenses"
             style="@style/FabStyleExpenses"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,4 +82,4 @@
 
     </com.github.clans.fab.FloatingActionMenu>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
