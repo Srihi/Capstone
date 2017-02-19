@@ -17,6 +17,8 @@ import com.sanath.moneytracker.ui.fragments.CategoriesFragment;
 import com.sanath.moneytracker.ui.fragments.SummaryFragment;
 import com.sanath.moneytracker.ui.fragments.TransactionsFragment;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -52,8 +54,8 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             //load initial fragment and select menu item
-            replaceFragment(AccountsFragment.newInstance());
-            navigationView.getMenu().getItem(2).setChecked(true);
+            replaceFragment(TransactionsFragment.newInstance());
+            navigationView.getMenu().getItem(0).setChecked(true);
         }
 
     }

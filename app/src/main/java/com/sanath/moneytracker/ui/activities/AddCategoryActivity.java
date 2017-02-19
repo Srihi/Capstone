@@ -1,6 +1,5 @@
 package com.sanath.moneytracker.ui.activities;
 
-import android.app.ActionBar;
 import android.content.ContentValues;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -72,7 +71,7 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
             public void onClick(View v) {
 
                 new ColorChooserDialog.Builder(AddCategoryActivity.this,
-                        R.string.title_dialog_category_color)
+                        R.string.dialog_title_category_color)
                         .build()
                         .show(AddCategoryActivity.this);
             }
@@ -103,9 +102,9 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
 
     private void setActivityTitle() {
         if (accountType == AccountTypes.EXPENSES) {
-            setTitle(R.string.activity_title_add_expense);
+            setTitle(R.string.activity_title_add_expense_category);
         } else {
-            setTitle(R.string.activity_title_add_income);
+            setTitle(R.string.activity_title_add_income_category);
         }
     }
 
@@ -133,7 +132,7 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
 
     private void showIconSelectorDialog() {
         new MaterialDialog.Builder(this)
-                .title(R.string.dialog_title_categoty_icon)
+                .title(R.string.dialog_title_category_icon)
                 .adapter(adapter, null)
                 .show();
     }
@@ -167,7 +166,7 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.ic_action_done) {
+        if (id == R.id.action_done) {
             try {
                 saveAccount();
                 finish();

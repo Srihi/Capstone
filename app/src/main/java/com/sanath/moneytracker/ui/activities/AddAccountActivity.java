@@ -67,7 +67,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
             public void onClick(View v) {
 
                 new ColorChooserDialog.Builder(AddAccountActivity.this,
-                        R.string.title_dialog_account_color)
+                        R.string.dialog_title_account_color)
                         .build()
                         .show(AddAccountActivity.this);
             }
@@ -164,7 +164,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.ic_action_done) {
+        if (id == R.id.action_done) {
             try {
                 saveAccount();
                 finish();

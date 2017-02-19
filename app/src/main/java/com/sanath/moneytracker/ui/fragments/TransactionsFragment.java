@@ -1,6 +1,7 @@
 package com.sanath.moneytracker.ui.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,8 +16,9 @@ import android.view.ViewGroup;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sanath.moneytracker.R;
-import com.sanath.moneytracker.adapters.AccountsAdapter;
 import com.sanath.moneytracker.adapters.TransactionAdapter;
+import com.sanath.moneytracker.data.DataContract.TransactionTypes;
+import com.sanath.moneytracker.ui.activities.AddTransactionActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,14 +30,17 @@ import butterknife.Unbinder;
 public class TransactionsFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = TransactionsFragment.class.getSimpleName();
 
+    private static final int REQUEST_CODE_ADD_INCOME = 0x000001;
+    private static final int TRANSACTION_LOADER = 0x000003;
+
     public static TransactionsFragment fragment;
     private Unbinder unbinder;
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
-    @BindView(R.id.menuActionAdd)
-    FloatingActionMenu floatingActionMenu;
 
+    @BindView(R.id.floatingActionMenu)
+    FloatingActionMenu floatingActionMenu;
     @BindView(R.id.menuItemIncome)
     FloatingActionButton menuItemIncome;
     @BindView(R.id.menuItemTransfer)
@@ -90,12 +95,37 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_transactions,menu);
+        inflater.inflate(R.menu.menu_transactions, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void onClick(View v) {
+        if (v.getId() == R.id.menuItemIncome) {
+            addIncome();
+        } else if (v.getId() == R.id.menuItemExpenses) {
+            addExpense();
+        } else if (v.getId() == R.id.menuItemTransfer) {
+            addTransfer();
+        }
+        floatingActionMenu.close(true);
+    }
 
+    private void addTransfer() {
+        Intent intentIncome = new Intent(getActivity(), AddTransactionActivity.class);
+        intentIncome.putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE, TransactionTypes.TRANSFER);
+        startActivityForResult(intentIncome, REQUEST_CODE_ADD_INCOME);
+    }
+
+    private void addExpense() {
+        Intent intentIncome = new Intent(getActivity(), AddTransactionActivity.class);
+        intentIncome.putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE, TransactionTypes.EXPENSES);
+        startActivityForResult(intentIncome, REQUEST_CODE_ADD_INCOME);
+    }
+
+    private void addIncome() {
+        Intent intentIncome = new Intent(getActivity(), AddTransactionActivity.class);
+        intentIncome.putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE, TransactionTypes.INCOME);
+        startActivityForResult(intentIncome, REQUEST_CODE_ADD_INCOME);
     }
 }

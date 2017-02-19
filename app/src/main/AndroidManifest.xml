@@ -22,6 +22,7 @@
         </activity>
         <activity android:name=".ui.activities.AddAccountActivity" />
         <activity android:name=".ui.activities.AddCategoryActivity" />
+        <activity android:name=".ui.activities.AddTransactionActivity" />
 
         <provider
             android:name=".data.DataProvider"

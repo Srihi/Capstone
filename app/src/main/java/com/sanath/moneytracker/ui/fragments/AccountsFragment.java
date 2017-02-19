@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.adapters.AccountsAdapter;
-import com.sanath.moneytracker.data.DataContract;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
 import com.sanath.moneytracker.data.DataContract.AccountTypes;
 import com.sanath.moneytracker.ui.activities.AddAccountActivity;
