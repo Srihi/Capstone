@@ -20,14 +20,27 @@ public class DataProvider extends ContentProvider {
     private static final int ACCOUNTS = 301;
     private static final int ACCOUNTS_BY_TYPE = 302;
 
+    private static final int JOURNALS = 400;
+    private static final int JOURNAL = 401;
+
+    private static final int POSTINGS = 500;
+    private static final int POSTING = 501;
+
     private DataHelper dataHelper;
 
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = CONTENT_AUTHORITY;
+
         matcher.addURI(authority, PATH_ACCOUNT, ACCOUNTS);
         matcher.addURI(authority, PATH_ACCOUNT + "/*", ACCOUNT);
         matcher.addURI(authority, PATH_ACCOUNT + "/by/*", ACCOUNTS_BY_TYPE);
+
+        matcher.addURI(authority, PATH_JOURNAL, JOURNALS);
+        matcher.addURI(authority, PATH_JOURNAL + "/*", JOURNAL);
+
+        matcher.addURI(authority, PATH_POSTING, POSTINGS);
+        matcher.addURI(authority, PATH_POSTING + "/*", POSTING);
         return matcher;
     }
 
@@ -47,8 +60,14 @@ public class DataProvider extends ContentProvider {
                 return AccountEntry.CONTENT_ITEM_TYPE;
             case ACCOUNTS:
                 return AccountEntry.CONTENT_TYPE;
-           /* case ACCOUNTS_BY_TYPE:
-                return AccountEntry.CONTENT_TYPE;*/
+            case JOURNAL:
+                return JournalEntry.CONTENT_ITEM_TYPE;
+            case JOURNALS:
+                return JournalEntry.CONTENT_TYPE;
+            case POSTING:
+                return PostingEntry.CONTENT_ITEM_TYPE;
+            case POSTINGS:
+                return PostingEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown Uri : " + uri);
         }
@@ -65,6 +84,24 @@ public class DataProvider extends ContentProvider {
                 long id = database.insert(AccountEntry.TABLE_NAME, null, values);
                 if (id > 0) {
                     returnUri = AccountEntry.buildAccountUri(id);
+                } else {
+                    throw new SQLException("Failed to insert new row into uri : " + uri);
+                }
+            }
+            break;
+            case JOURNALS: {
+                long id = database.insert(JournalEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    returnUri = JournalEntry.buildAccountUri(id);
+                } else {
+                    throw new SQLException("Failed to insert new row into uri : " + uri);
+                }
+            }
+            break;
+            case POSTINGS: {
+                long id = database.insert(PostingEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    returnUri = PostingEntry.buildAccountUri(id);
                 } else {
                     throw new SQLException("Failed to insert new row into uri : " + uri);
                 }
@@ -92,6 +129,14 @@ public class DataProvider extends ContentProvider {
         Cursor cursor;
         switch (match) {
             case ACCOUNTS: {
+                cursor = database.query(AccountEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+            }
+            break;
+            case JOURNALS: {
+                cursor = database.query(AccountEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+            }
+            break;
+            case POSTINGS: {
                 cursor = database.query(AccountEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
             }
             break;
