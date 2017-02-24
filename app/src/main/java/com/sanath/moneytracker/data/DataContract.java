@@ -28,6 +28,11 @@ public class DataContract {
         int EXPENSES = 2;
     }
 
+    public interface CreditType {
+        int CREDIT = 0;
+        int DEBIT = 1;
+    }
+
 
     public static final String PATH_ACCOUNT = "account";
     public static final String PATH_JOURNAL = "journal";
@@ -99,6 +104,7 @@ public class DataContract {
         public static final String COLUMN_JOURNAL_ID = "journal_id";
         public static final String COLUMN_ACCOUNT_ID = "account_id";
         public static final String COLUMN_AMOUNT = "amount";
+        public static final String COLUMN_CREDIT_DEBIT = "credit_debit";
         public static final String COLUMN_DATE_TIME = "datetime";
 
 

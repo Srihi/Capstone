@@ -122,8 +122,6 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         //save transactions here
         double amount = Double.parseDouble(editTextAmount.getText().toString());
 
-        ArrayList<ContentProviderOperation> operations = new
-                ArrayList<>();
 
         long transactionDateTime = transactionDate.getTime();
         int sourceAccountId = getSelectedAccountId(((Cursor) spinnerSourceAccount.getSelectedItem()));
@@ -139,12 +137,16 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         postingValuesSource.put(PostingEntry.COLUMN_ACCOUNT_ID, sourceAccountId);
         postingValuesSource.put(PostingEntry.COLUMN_AMOUNT, -amount);
         postingValuesSource.put(PostingEntry.COLUMN_DATE_TIME, transactionDateTime);
+        postingValuesSource.put(DataContract.PostingEntry.COLUMN_CREDIT_DEBIT, DataContract.CreditType.CREDIT);
 
         ContentValues postingValuesDestination = new ContentValues();
         postingValuesDestination.put(PostingEntry.COLUMN_ACCOUNT_ID, destinationAccountId);
         postingValuesDestination.put(PostingEntry.COLUMN_AMOUNT, amount);
         postingValuesDestination.put(PostingEntry.COLUMN_DATE_TIME, transactionDateTime);
+        postingValuesDestination.put(DataContract.PostingEntry.COLUMN_CREDIT_DEBIT, DataContract.CreditType.DEBIT);
 
+        ArrayList<ContentProviderOperation> operations = new
+                ArrayList<>();
         operations.add(ContentProviderOperation.newInsert(JournalEntry.CONTENT_URI).withValues(journalValues).build());
 
         operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
@@ -184,7 +186,7 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             textViewSourceAccount.setText(R.string.account);
             textViewDestinationAccount.setText(R.string.account);
             //imageViewDownArrow.setVisibility(View.VISIBLE);
-        }else if(transactionType == TransactionTypes.INCOME){
+        } else if (transactionType == TransactionTypes.INCOME) {
             textViewSourceAccount.setText(R.string.source);
             textViewDestinationAccount.setText(R.string.account);
         }

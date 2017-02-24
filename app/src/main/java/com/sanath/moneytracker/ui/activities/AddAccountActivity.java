@@ -1,8 +1,11 @@
 package com.sanath.moneytracker.ui.activities;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.RemoteException;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,15 +24,21 @@ import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.common.Utils;
 import com.sanath.moneytracker.data.DataContract;
+import com.sanath.moneytracker.data.DataContract.TransactionTypes;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder.IconValue;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+
+import static com.sanath.moneytracker.R.id.editTextDescription;
 
 public class AddAccountActivity extends AppCompatActivity implements ColorChooserDialog.ColorCallback {
 
@@ -51,6 +60,8 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     private ArrayList<IconValue> drawableCache = new ArrayList<>(3);
     private int selectedColor = Color.GRAY;
     private IconValue selectedIcon = IconValue.BANK;
+
+    private SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,12 +187,45 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     }
 
     private void saveAccount() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DataContract.AccountEntry.COLUMN_NAME, editTextAccountName.getText().toString().trim());
-        contentValues.put(DataContract.AccountEntry.COLUMN_TYPE, DataContract.AccountTypes.TRANSFER);
-        contentValues.put(DataContract.AccountEntry.COLUMN_ICON, selectedIcon.ordinal());
-        contentValues.put(DataContract.AccountEntry.COLUMN_COLOR, selectedColor);
-        getContentResolver().insert(DataContract.AccountEntry.CONTENT_URI, contentValues);
+
+        double amount = Double.parseDouble(editTextBalance.getText().toString());
+        long transactionDateTime = new Date().getTime();
+
+        ContentValues accountValues = new ContentValues();
+        accountValues.put(DataContract.AccountEntry.COLUMN_NAME, editTextAccountName.getText().toString().trim());
+        accountValues.put(DataContract.AccountEntry.COLUMN_TYPE, DataContract.AccountTypes.TRANSFER);
+        accountValues.put(DataContract.AccountEntry.COLUMN_ICON, selectedIcon.ordinal());
+        accountValues.put(DataContract.AccountEntry.COLUMN_COLOR, selectedColor);
+
+        ContentValues journalValues = new ContentValues();
+        journalValues.put(DataContract.JournalEntry.COLUMN_TYPE, TransactionTypes.BALANCE);
+        journalValues.put(DataContract.JournalEntry.COLUMN_PERIOD, sdfPeriod.format(transactionDateTime));
+        journalValues.put(DataContract.JournalEntry.COLUMN_DESCRIPTION, "balance");
+        journalValues.put(DataContract.JournalEntry.COLUMN_DATE_TIME, transactionDateTime);
+
+        ContentValues postingValuesDestination = new ContentValues();
+        postingValuesDestination.put(DataContract.PostingEntry.COLUMN_AMOUNT, amount);
+        postingValuesDestination.put(DataContract.PostingEntry.COLUMN_DATE_TIME, transactionDateTime);
+        postingValuesDestination.put(DataContract.PostingEntry.COLUMN_CREDIT_DEBIT, DataContract.CreditType.DEBIT);
+
+        ArrayList<ContentProviderOperation> operations = new
+                ArrayList<>();
+
+        operations.add(ContentProviderOperation.newInsert(DataContract.AccountEntry.CONTENT_URI).withValues(accountValues).build());
+
+        operations.add(ContentProviderOperation.newInsert(DataContract.JournalEntry.CONTENT_URI).withValues(journalValues).build());
+
+        operations.add(ContentProviderOperation.newInsert(DataContract.PostingEntry.CONTENT_URI).
+                withValues(postingValuesDestination)
+                .withValueBackReference(DataContract.PostingEntry.COLUMN_ACCOUNT_ID, 0)
+                .withValueBackReference(DataContract.PostingEntry.COLUMN_JOURNAL_ID, 1)
+                .build());
+
+        try {
+            getContentResolver().applyBatch(DataContract.CONTENT_AUTHORITY, operations);
+        } catch (RemoteException | OperationApplicationException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
     }
 
     @Override

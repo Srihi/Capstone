@@ -56,6 +56,7 @@ public class DataHelper extends SQLiteOpenHelper {
             PostingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             PostingEntry.COLUMN_JOURNAL_ID + " INTEGER NOT NULL, " +
             PostingEntry.COLUMN_ACCOUNT_ID + " INTEGER NOT NULL, " +
+            PostingEntry.COLUMN_CREDIT_DEBIT + " INTEGER NOT NULL, " +
             PostingEntry.COLUMN_AMOUNT + " REAL NOT NULL, " +
             PostingEntry.COLUMN_DATE_TIME + " INTEGER NOT NULL " +
             ")";
