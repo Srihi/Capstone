@@ -41,9 +41,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="67dp"
+        tools:layout_editor_absoluteX="64dp"
         tools:layout_editor_absoluteY="0dp"
-        app:layout_constraintGuide_end="344dp" />
+        app:layout_constraintGuide_begin="64dp" />
 
     <TextView
         android:id="@+id/textViewAccountName"

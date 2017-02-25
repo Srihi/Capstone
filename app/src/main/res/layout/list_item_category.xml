@@ -32,9 +32,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="67dp"
-        tools:layout_editor_absoluteY="0dp"
-        app:layout_constraintGuide_end="344dp" />
+        app:layout_constraintGuide_begin="64dp"
+        tools:layout_editor_absoluteX="64dp"
+        tools:layout_editor_absoluteY="0dp" />
 
     <TextView
         android:id="@+id/textViewCategoryName"
@@ -54,7 +54,7 @@
         app:layout_constraintLeft_toLeftOf="@+id/guideline2"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.45"
+        app:layout_constraintVertical_bias="0.5"
         tools:text="Commercial Bank" />
 
 </android.support.constraint.ConstraintLayout>
