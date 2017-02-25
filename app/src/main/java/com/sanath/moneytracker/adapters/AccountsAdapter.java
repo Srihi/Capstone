@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,7 @@ import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.common.CursorRecyclerAdapter;
 import com.sanath.moneytracker.common.Utils;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
+import com.sanath.moneytracker.data.DataContract.PostingEntry;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
@@ -39,6 +38,20 @@ public class AccountsAdapter extends CursorRecyclerAdapter<AccountsVH> {
         holder.imageViewAccountIcon.setImageDrawable(builder.build());
         Drawable background = holder.imageViewAccountIcon.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
+
+        holder.textViewBalance.setText(String.valueOf(getBalance(cursor.getInt(cursor.getColumnIndex(AccountEntry._ID)))));
+    }
+
+    private double getBalance(int accountId) {
+        double balance = 0.0;
+        Cursor cursorBalance = context.getContentResolver().query(PostingEntry.CONTENT_URI,
+                new String[]{"sum(" + PostingEntry.COLUMN_AMOUNT + ") as balance"},
+                PostingEntry.COLUMN_ACCOUNT_ID + "=?",
+                new String[]{String.valueOf(accountId)}, null);
+        if (cursorBalance != null && cursorBalance.moveToFirst()) {
+            balance = cursorBalance.getDouble(cursorBalance.getColumnIndex("balance"));
+        }
+        return balance;
     }
 
     @Override

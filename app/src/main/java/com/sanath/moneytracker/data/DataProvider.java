@@ -133,11 +133,11 @@ public class DataProvider extends ContentProvider {
             }
             break;
             case JOURNALS: {
-                cursor = database.query(AccountEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                cursor = database.query(JournalEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
             }
             break;
             case POSTINGS: {
-                cursor = database.query(AccountEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                cursor = database.query(PostingEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
             }
             break;
             default:
