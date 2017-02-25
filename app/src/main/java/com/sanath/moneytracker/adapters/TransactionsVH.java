@@ -1,5 +1,6 @@
 package com.sanath.moneytracker.adapters;
 
+import android.database.CharArrayBuffer;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,6 +25,9 @@ public class TransactionsVH extends RecyclerView.ViewHolder {
     TextView textViewTransactionAmount;
     @BindView(R.id.textViewTransactionDetails)
     TextView textViewTransactionDetails;
+    @BindView(R.id.textViewHeader)
+    TextView textViewHeader;
+    public String header = null;
 
 
     public TransactionsVH(View itemView) {

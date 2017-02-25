@@ -37,6 +37,7 @@ public class DataContract {
     public static final String PATH_ACCOUNT = "account";
     public static final String PATH_JOURNAL = "journal";
     public static final String PATH_POSTING = "posting";
+    public static final String PATH_TRANSACTION = "transaction";
 
     public static final class AccountEntry implements BaseColumns {
 
@@ -55,7 +56,7 @@ public class DataContract {
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_COLOR = "color";
         public static final String COLUMN_ICON = "icon";
-        public static final String COLUMN_BALANCE = "balance";
+        public static final String ACCOUNT_TYPE = "account_type";
 
 
         public static Uri buildAccountUri(long id) {
@@ -106,6 +107,30 @@ public class DataContract {
         public static final String COLUMN_AMOUNT = "amount";
         public static final String COLUMN_CREDIT_DEBIT = "credit_debit";
         public static final String COLUMN_DATE_TIME = "datetime";
+
+
+        public static Uri buildAccountUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+    public static final class TransactionEntry {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_TRANSACTION).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRANSACTION;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TRANSACTION;
+
+        // Table name
+        public static final String TABLE_NAME = "posting";
+        public static final String COLUMN_JOURNAL_ID = "journal_id";
+        public static final String COLUMN_ACCOUNT_ID = "account_id";
+        public static final String COLUMN_AMOUNT = "amount";
+        public static final String COLUMN_CREDIT_DEBIT = "credit_debit";
+        public static final String COLUMN_DATE_TIME = "datetime";
+        public static final String TRANSACTION_TYPE = "transaction_type";
 
 
         public static Uri buildAccountUri(long id) {

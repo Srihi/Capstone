@@ -42,4 +42,6 @@
     <string name="category">Category</string>
     <string name="account">Account</string>
     <string name="source">Source</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
 </resources>

@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
@@ -26,6 +27,10 @@ public class DataProvider extends ContentProvider {
     private static final int POSTINGS = 500;
     private static final int POSTING = 501;
 
+
+    private static final int TRANSACTIONS = 600;
+
+
     private DataHelper dataHelper;
 
     private static UriMatcher buildUriMatcher() {
@@ -41,6 +46,8 @@ public class DataProvider extends ContentProvider {
 
         matcher.addURI(authority, PATH_POSTING, POSTINGS);
         matcher.addURI(authority, PATH_POSTING + "/*", POSTING);
+
+        matcher.addURI(authority, PATH_TRANSACTION, TRANSACTIONS);
         return matcher;
     }
 
@@ -68,6 +75,8 @@ public class DataProvider extends ContentProvider {
                 return PostingEntry.CONTENT_ITEM_TYPE;
             case POSTINGS:
                 return PostingEntry.CONTENT_TYPE;
+            case TRANSACTIONS:
+                return TransactionEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown Uri : " + uri);
         }
@@ -111,6 +120,7 @@ public class DataProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri" + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
         return returnUri;
 
     }
@@ -138,6 +148,24 @@ public class DataProvider extends ContentProvider {
             break;
             case POSTINGS: {
                 cursor = database.query(PostingEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+            }
+            break;
+            case TRANSACTIONS: {
+                SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+                queryBuilder.setTables("posting " +
+                        "inner join " +
+                        "journal" +
+                        " on " +
+                        "journal._id" +
+                        " == " +
+                        "posting.journal_id" +
+                        " inner join " +
+                        "account on " +
+                        "account._id" +
+                        " == " +
+                        "posting.account_id" +
+                        "");
+                cursor = queryBuilder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
             }
             break;
             default:
