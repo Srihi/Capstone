@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/filter"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButtonAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/imageButtonIncome"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:srcCompat="@drawable/ic_all" />
+
+    <ImageButton
+        android:id="@+id/imageButtonIncome"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/imageButtonAll"
+        app:layout_constraintRight_toLeftOf="@+id/imageButtonExpenses"
+        app:srcCompat="@drawable/ic_income"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <ImageButton
+        android:id="@+id/imageButtonExpenses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/imageButtonIncome"
+        app:layout_constraintRight_toLeftOf="@+id/imageButtonTransfer"
+        app:srcCompat="@drawable/ic_expense"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <ImageButton
+        android:id="@+id/imageButtonTransfer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/imageButtonExpenses"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/ic_transfer"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textViewActionAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/all"
+        app:layout_constraintLeft_toLeftOf="@+id/imageButtonAll"
+        app:layout_constraintRight_toRightOf="@+id/imageButtonAll"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonAll" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/income"
+        app:layout_constraintLeft_toLeftOf="@+id/imageButtonIncome"
+        app:layout_constraintRight_toRightOf="@+id/imageButtonIncome"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonIncome" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/expenses"
+        app:layout_constraintLeft_toLeftOf="@+id/imageButtonExpenses"
+        app:layout_constraintRight_toRightOf="@+id/imageButtonExpenses"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonExpenses" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/transfer"
+        app:layout_constraintLeft_toLeftOf="@+id/imageButtonTransfer"
+        app:layout_constraintRight_toRightOf="@+id/imageButtonTransfer"
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonTransfer" />
+</android.support.constraint.ConstraintLayout>

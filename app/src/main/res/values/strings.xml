@@ -44,4 +44,7 @@
     <string name="source">Source</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
+    <string name="transfer">Transfer</string>
+    <string name="all">All</string>
+    <string name="filter">Filter</string>
 </resources>

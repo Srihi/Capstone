@@ -15,6 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -66,6 +67,9 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
 
     private SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
 
+    private boolean toggleFilter = false;
+    private FilterFragmentDialog filterDialog;
+
     public static TransactionsFragment newInstance() {
         fragment = new TransactionsFragment();
         return fragment;
@@ -116,6 +120,17 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_filter: {
+                toggleFilterView();
+            }
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.menuItemIncome) {
             addIncome();
@@ -125,6 +140,26 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
             addTransfer();
         }
         floatingActionMenu.close(true);
+    }
+
+    private void toggleFilterView() {
+        if (!toggleFilter) {
+            //open
+            if (filterDialog == null) {
+                filterDialog = new FilterFragmentDialog();
+            }
+            Bundle bundle = new Bundle();
+            filterDialog.setArguments(bundle);
+            filterDialog.show(getChildFragmentManager(), filterDialog.getTag());
+
+        } else {
+            //close
+            if (filterDialog != null) {
+                filterDialog.dismiss();
+            }
+        }
+
+        toggleFilter = !toggleFilter;
     }
 
     private void addTransfer() {
