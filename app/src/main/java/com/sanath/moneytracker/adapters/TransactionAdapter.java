@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +16,12 @@ import com.sanath.moneytracker.common.CursorRecyclerAdapter;
 import com.sanath.moneytracker.common.Utils;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
 import com.sanath.moneytracker.data.DataContract.JournalEntry;
-import com.sanath.moneytracker.data.DataContract.PostingEntry;
+import com.sanath.moneytracker.data.DataContract.TransactionEntry;
+import com.sanath.moneytracker.data.DataContract.TransactionTypes;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -65,8 +70,8 @@ public class TransactionAdapter extends CursorRecyclerAdapter<TransactionsVH> {
 
         holder.textViewTransactionDescription.setText(
                 cursor.getString(cursor.getColumnIndex(JournalEntry.COLUMN_DESCRIPTION)));
-        holder.textViewTransactionAmount.setText(String.valueOf(
-                cursor.getDouble(cursor.getColumnIndex(PostingEntry.COLUMN_AMOUNT))));
+
+
         holder.textViewTransactionDetails.setText(String.valueOf(
                 cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME))));
 
@@ -77,9 +82,25 @@ public class TransactionAdapter extends CursorRecyclerAdapter<TransactionsVH> {
         Drawable background = holder.imageViewTransactionIcon.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
 
+        int transactionType = cursor.getInt(cursor.getColumnIndex(TransactionEntry.TRANSACTION_TYPE));
+
+        double amount = cursor.getDouble(cursor.getColumnIndex(TransactionEntry.COLUMN_AMOUNT));
+        SpannableString spannableAmount = new SpannableString(NumberFormat.getCurrencyInstance(Locale.getDefault())
+                .format(Math.abs(amount)));
+        if (amount < 0 && transactionType == TransactionTypes.INCOME) {
+            // income
+            setColor(spannableAmount, R.color.colorGreen500);
+        } else if (amount > 0 && transactionType == TransactionTypes.EXPENSES) {
+            //expense
+            setColor(spannableAmount, R.color.colorRed500);
+        } else {
+            setColor(spannableAmount, R.color.colorBlue500);
+        }
+        holder.textViewTransactionAmount.setText(spannableAmount);
+
         boolean needHeader = false;
         final int position = cursor.getPosition();
-        holder.header = getDateText(cursor.getLong(cursor.getColumnIndex(JournalEntry.COLUMN_DATE_TIME)));
+        holder.header = getDateText(cursor.getLong(cursor.getColumnIndex(TransactionEntry.COLUMN_DATE_TIME)));
 
         switch (cellStates[position]) {
             case STATE_SECTIONED_CELL:
@@ -100,7 +121,7 @@ public class TransactionAdapter extends CursorRecyclerAdapter<TransactionsVH> {
                 } else {
                     cursor.moveToPosition(position - 1);
 
-                    header = getDateText(cursor.getLong(cursor.getColumnIndex(JournalEntry.COLUMN_DATE_TIME)));
+                    header = getDateText(cursor.getLong(cursor.getColumnIndex(TransactionEntry.COLUMN_DATE_TIME)));
                     if (header != null && holder.header != null && !header.equalsIgnoreCase(holder.header)) {
                         needHeader = true;
                     }
@@ -121,12 +142,20 @@ public class TransactionAdapter extends CursorRecyclerAdapter<TransactionsVH> {
         }
     }
 
+    private void setColor(SpannableString amountSpann, int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            amountSpann.setSpan(new ForegroundColorSpan(context.getColor(color)), 0, amountSpann.length(), SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } else {
+            amountSpann.setSpan(new ForegroundColorSpan(context.getResources().getColor(color)), 0, amountSpann.length(), SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+    }
+
     private String getDateText(Long dateInMillis) {
         calendar.setTimeInMillis(dateInMillis);
         int dateOfMonthToday = calendarToday.get(Calendar.DAY_OF_MONTH);
-        if(dateOfMonthToday == calendar.get(Calendar.DAY_OF_MONTH)){
+        if (dateOfMonthToday == calendar.get(Calendar.DAY_OF_MONTH)) {
             return context.getString(R.string.today);
-        }else if (--dateOfMonthToday == calendar.get(Calendar.DAY_OF_MONTH)){
+        } else if (--dateOfMonthToday == calendar.get(Calendar.DAY_OF_MONTH)) {
             return context.getString(R.string.yesterday);
         }
 

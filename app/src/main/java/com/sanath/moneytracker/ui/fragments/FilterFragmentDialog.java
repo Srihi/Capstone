@@ -1,17 +1,21 @@
 package com.sanath.moneytracker.ui.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
+import android.widget.ImageButton;
 
 import com.sanath.moneytracker.R;
+import com.sanath.moneytracker.data.DataContract;
+import com.sanath.moneytracker.data.DataContract.TransactionTypes;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
@@ -21,9 +25,28 @@ import butterknife.Unbinder;
 
 public class FilterFragmentDialog extends BottomSheetDialogFragment implements View.OnClickListener {
 
+    private static final java.lang.String KEY_SELECTED_FILTER = "key_selected_filter";
     private Unbinder unbinder;
 
+    @BindView(R.id.imageButtonAll)
+    ImageButton imageButtonAll;
+    @BindView(R.id.imageButtonIncome)
+    ImageButton imageButtonIncome;
+    @BindView(R.id.imageButtonExpenses)
+    ImageButton imageButtonExpenses;
+    @BindView(R.id.imageButtonTransfer)
+    ImageButton imageButtonTransfer;
+
     private FilterDismissListener dismissListener;
+    private FilterSelectedListener filterSelectedListener;
+
+    private int selectedFilterType = TransactionTypes.ALL;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        selectedFilterType = getArguments().getInt(KEY_SELECTED_FILTER, TransactionTypes.ALL);
+    }
 
     @Override
     public void setupDialog(Dialog dialog, int style) {
@@ -38,6 +61,10 @@ public class FilterFragmentDialog extends BottomSheetDialogFragment implements V
         if (behavior != null && behavior instanceof BottomSheetBehavior) {
             ((BottomSheetBehavior) behavior).setBottomSheetCallback(mBottomSheetBehaviorCallback);
         }
+        imageButtonAll.setOnClickListener(this);
+        imageButtonIncome.setOnClickListener(this);
+        imageButtonExpenses.setOnClickListener(this);
+        imageButtonTransfer.setOnClickListener(this);
     }
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -54,19 +81,6 @@ public class FilterFragmentDialog extends BottomSheetDialogFragment implements V
         }
     };
 
-   /* @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        //filterTransactionListener = (FilterTransactionListener) activity;
-        dismissListener = (FilterDismissListener) activity;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        //filterTransactionListener = (FilterTransactionListener) context;
-    }*/
-
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
@@ -79,10 +93,45 @@ public class FilterFragmentDialog extends BottomSheetDialogFragment implements V
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.imageButtonAll:
+                filter(TransactionTypes.ALL);
+                break;
+            case R.id.imageButtonIncome:
+                filter(TransactionTypes.INCOME);
+                break;
+            case R.id.imageButtonExpenses:
+                filter(TransactionTypes.EXPENSES);
+                break;
+            case R.id.imageButtonTransfer:
+                filter(TransactionTypes.TRANSFER);
+                break;
+            default:
+                filter(TransactionTypes.ALL);
+
+        }
 
     }
 
-    public interface FilterDismissListener{
+    private void filter(int transactionTypes) {
+        if (this.filterSelectedListener != null) {
+            this.filterSelectedListener.onFilterSelected(transactionTypes);
+        }
+    }
+
+    public void setFilterDismissListener(FilterDismissListener filterDismissListener) {
+        dismissListener = filterDismissListener;
+    }
+
+    public void setFilterSelectedListener(FilterSelectedListener filterSelectedListener) {
+        this.filterSelectedListener = filterSelectedListener;
+    }
+
+    public interface FilterDismissListener {
         void onDismiss();
+    }
+
+    public interface FilterSelectedListener {
+        void onFilterSelected(int transactionTypes);
     }
 }

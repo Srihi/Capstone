@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -18,12 +19,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.adapters.TransactionAdapter;
-import com.sanath.moneytracker.data.DataContract;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
 import com.sanath.moneytracker.data.DataContract.JournalEntry;
 import com.sanath.moneytracker.data.DataContract.PostingEntry;
@@ -32,6 +34,7 @@ import com.sanath.moneytracker.data.DataContract.TransactionTypes;
 import com.sanath.moneytracker.ui.activities.AddTransactionActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -39,14 +42,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+import static com.sanath.moneytracker.ui.fragments.FilterFragmentDialog.*;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TransactionsFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class TransactionsFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>, FilterDismissListener, FilterSelectedListener {
     private static final String TAG = TransactionsFragment.class.getSimpleName();
 
     private static final int REQUEST_CODE_ADD_INCOME = 0x000001;
     private static final int TRANSACTION_LOADER = 0x000003;
+    private static final String ALL_TRANSACTION_SELECTION = "(((account.type == 1 and journal.type == 2 and posting.credit_debit == 0) " +
+            "or (account.type == 2 and journal.type == 3 and posting.credit_debit == 1) " +
+            "or (account.type == 0 and journal.type == 1 and posting.credit_debit == 1)) " +
+            "and period == ?)";
 
     public static TransactionsFragment fragment;
     private Unbinder unbinder;
@@ -63,12 +72,23 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
     @BindView(R.id.menuItemExpenses)
     FloatingActionButton menuItemExpenses;
 
+    @BindView(R.id.imageButtonRight)
+    ImageButton imageButtonRight;
+    @BindView(R.id.imageButtonLeft)
+    ImageButton imageButtonLeft;
+    @BindView(R.id.textViewMonth)
+    TextView textViewMonth;
+
     private TransactionAdapter transactionAdapter;
 
     private SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
+    private SimpleDateFormat sdfMonth = new SimpleDateFormat("MMM, yyyy", Locale.getDefault());
+    private Calendar calendarPeriod = Calendar.getInstance();
 
     private boolean toggleFilter = false;
     private FilterFragmentDialog filterDialog;
+
+    private int selectedTransactionsType = TransactionTypes.ALL;
 
     public static TransactionsFragment newInstance() {
         fragment = new TransactionsFragment();
@@ -95,12 +115,15 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
         menuItemExpenses.setOnClickListener(this);
         menuItemIncome.setOnClickListener(this);
         menuItemTransfer.setOnClickListener(this);
+        imageButtonLeft.setOnClickListener(this);
+        imageButtonRight.setOnClickListener(this);
 
         transactionAdapter = new TransactionAdapter(getActivity(), null);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(transactionAdapter);
+        setMonthNavTitle();
 
         return view;
     }
@@ -132,14 +155,35 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.menuItemIncome) {
+        int id = v.getId();
+        if (id == R.id.menuItemIncome) {
             addIncome();
-        } else if (v.getId() == R.id.menuItemExpenses) {
+        } else if (id == R.id.menuItemExpenses) {
             addExpense();
-        } else if (v.getId() == R.id.menuItemTransfer) {
+        } else if (id == R.id.menuItemTransfer) {
             addTransfer();
+        } else if (id == R.id.imageButtonRight) {
+            gotoNextMonth();
+        } else if (id == R.id.imageButtonLeft) {
+            gotoPreviousMonth();
         }
         floatingActionMenu.close(true);
+    }
+
+    private void gotoNextMonth() {
+        calendarPeriod.add(Calendar.MONTH, 1);
+        getLoaderManager().restartLoader(TRANSACTION_LOADER, null, this);
+        setMonthNavTitle();
+    }
+
+    private void gotoPreviousMonth() {
+        calendarPeriod.add(Calendar.MONTH, -1);
+        getLoaderManager().restartLoader(TRANSACTION_LOADER, null, this);
+        setMonthNavTitle();
+    }
+
+    private void setMonthNavTitle() {
+        textViewMonth.setText(sdfMonth.format(calendarPeriod.getTime()));
     }
 
     private void toggleFilterView() {
@@ -150,6 +194,8 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
             }
             Bundle bundle = new Bundle();
             filterDialog.setArguments(bundle);
+            filterDialog.setFilterDismissListener(this);
+            filterDialog.setFilterSelectedListener(this);
             filterDialog.show(getChildFragmentManager(), filterDialog.getTag());
 
         } else {
@@ -203,12 +249,31 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
                 AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_COLOR,
                 AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_ICON,
         },
-                "(((account.type == 1 and journal.type == 2 and posting.credit_debit == 0) " +
-                        "or (account.type == 2 and journal.type == 3 and posting.credit_debit == 1) " +
-                        "or (account.type == 0 and journal.type == 1 and posting.credit_debit == 1)) " +
-                        "and period == ?)",
-                new String[]{sdfPeriod.format(new Date())},
+                getSelection(),
+                new String[]{getPeriod()},
                 PostingEntry.TABLE_NAME + "." + PostingEntry.COLUMN_DATE_TIME + " DESC");
+    }
+
+    private String getPeriod() {
+        return sdfPeriod.format(calendarPeriod.getTime());
+    }
+
+    @NonNull
+    private String getSelection() {
+        switch (selectedTransactionsType) {
+            case TransactionTypes.ALL:
+                return ALL_TRANSACTION_SELECTION;
+            case TransactionTypes.EXPENSES:
+                return "((account.type == 1 and journal.type == 2 and posting.credit_debit == 0) and period == ?)";
+            case TransactionTypes.INCOME:
+                return "((account.type == 2 and journal.type == 3 and posting.credit_debit == 1) and period == ?)";
+            case TransactionTypes.TRANSFER:
+                return "((account.type == 0 and journal.type == 1 and posting.credit_debit == 1) and period == ?)";
+            default:
+                return ALL_TRANSACTION_SELECTION;
+
+
+        }
     }
 
     @Override
@@ -220,5 +285,21 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         transactionAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onDismiss() {
+        if (filterDialog != null) {
+            filterDialog.dismiss();
+            toggleFilter = !toggleFilter;
+            filterDialog = null;
+        }
+    }
+
+    @Override
+    public void onFilterSelected(int transactionTypes) {
+        selectedTransactionsType = transactionTypes;
+        getLoaderManager().restartLoader(TRANSACTION_LOADER, null, this);
+        onDismiss();
     }
 }

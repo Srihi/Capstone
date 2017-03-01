@@ -20,6 +20,7 @@ public class DataContract {
         int TRANSFER = 1;
         int INCOME = 2;
         int EXPENSES = 3;
+        int ALL = 4;
     }
 
     public interface AccountTypes {
