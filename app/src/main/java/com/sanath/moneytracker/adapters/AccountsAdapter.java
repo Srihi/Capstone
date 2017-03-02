@@ -39,7 +39,7 @@ public class AccountsAdapter extends CursorRecyclerAdapter<AccountsVH> {
         Drawable background = holder.imageViewAccountIcon.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
 
-        holder.textViewBalance.setText(String.valueOf(getBalance(cursor.getInt(cursor.getColumnIndex(AccountEntry._ID)))));
+        holder.textViewBalance.setText(Utils.getAmountWithCurrency(getBalance(cursor.getInt(cursor.getColumnIndex(AccountEntry._ID)))));
     }
 
     private double getBalance(int accountId) {

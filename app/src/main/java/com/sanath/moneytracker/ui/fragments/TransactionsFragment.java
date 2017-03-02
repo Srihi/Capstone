@@ -124,7 +124,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(transactionAdapter);
         setMonthNavTitle();
-
+        floatingActionMenu.setClosedOnTouchOutside(true);
         return view;
     }
 

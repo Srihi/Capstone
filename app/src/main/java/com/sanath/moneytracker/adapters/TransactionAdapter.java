@@ -21,7 +21,6 @@ import com.sanath.moneytracker.data.DataContract.TransactionTypes;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -85,8 +84,7 @@ public class TransactionAdapter extends CursorRecyclerAdapter<TransactionsVH> {
         int transactionType = cursor.getInt(cursor.getColumnIndex(TransactionEntry.TRANSACTION_TYPE));
 
         double amount = cursor.getDouble(cursor.getColumnIndex(TransactionEntry.COLUMN_AMOUNT));
-        SpannableString spannableAmount = new SpannableString(NumberFormat.getCurrencyInstance(Locale.getDefault())
-                .format(Math.abs(amount)));
+        SpannableString spannableAmount = Utils.getAmountWithCurrency(amount);
         if (amount < 0 && transactionType == TransactionTypes.INCOME) {
             // income
             setColor(spannableAmount, R.color.colorGreen500);

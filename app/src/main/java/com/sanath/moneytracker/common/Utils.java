@@ -5,8 +5,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.support.annotation.NonNull;
+import android.text.SpannableString;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Created by sanathnandasiri on 2/4/17.
@@ -28,5 +33,11 @@ public class Utils {
         } else if (background instanceof ColorDrawable) {
             ((ColorDrawable) background).setColor(color);
         }
+    }
+
+    @NonNull
+    public static SpannableString getAmountWithCurrency(double amount) {
+        return new SpannableString(NumberFormat.getCurrencyInstance(Locale.getDefault())
+                .format(Math.abs(amount)));
     }
 }
