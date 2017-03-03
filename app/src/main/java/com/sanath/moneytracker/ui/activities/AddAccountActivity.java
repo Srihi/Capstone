@@ -63,6 +63,8 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
 
     private SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
 
+    private boolean isEdit = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
