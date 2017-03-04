@@ -47,4 +47,7 @@
     <string name="transfer">Transfer</string>
     <string name="all">All</string>
     <string name="filter">Filter</string>
+    <string name="delete">Delete</string>
+    <string name="activity_title_edit_expense_category">Edit Expense Category</string>
+    <string name="activity_title_edit_income_category">Edit Income Category</string>
 </resources>

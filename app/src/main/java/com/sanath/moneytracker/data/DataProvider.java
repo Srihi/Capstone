@@ -8,7 +8,10 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
+
+import com.sanath.moneytracker.common.Utils;
 
 import static com.sanath.moneytracker.data.DataContract.*;
 
@@ -56,7 +59,34 @@ public class DataProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        final SQLiteDatabase database = dataHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        int rows;
+        switch (match) {
+            case ACCOUNT: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.delete(AccountEntry.TABLE_NAME,
+                            AccountEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.delete(AccountEntry.TABLE_NAME,
+                            AccountEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case ACCOUNTS: {
+                rows = database.delete(AccountEntry.TABLE_NAME, selection, selectionArgs);
+            }
+            break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri" + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rows;
     }
 
     @Override
@@ -138,6 +168,10 @@ public class DataProvider extends ContentProvider {
         int match = uriMatcher.match(uri);
         Cursor cursor;
         switch (match) {
+            case ACCOUNT: {
+                cursor = database.query(AccountEntry.TABLE_NAME, projection, AccountEntry._ID + "=?", new String[]{uri.getLastPathSegment()}, null, null, sortOrder);
+            }
+            break;
             case ACCOUNTS: {
                 cursor = database.query(AccountEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
             }
@@ -178,6 +212,35 @@ public class DataProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        final SQLiteDatabase database = dataHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        int rows;
+        switch (match) {
+            case ACCOUNT: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.update(AccountEntry.TABLE_NAME,
+                            values,
+                            AccountEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.update(AccountEntry.TABLE_NAME,
+                            values,
+                            AccountEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case ACCOUNTS: {
+                rows = database.update(AccountEntry.TABLE_NAME, values, selection, selectionArgs);
+            }
+            break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri" + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rows;
     }
 }

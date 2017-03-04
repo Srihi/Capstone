@@ -1,8 +1,11 @@
 package com.sanath.moneytracker.ui.activities;
 
 import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -20,7 +23,7 @@ import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.common.Utils;
-import com.sanath.moneytracker.data.DataContract;
+import com.sanath.moneytracker.data.DataContract.AccountEntry;
 import com.sanath.moneytracker.data.DataContract.AccountTypes;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -54,13 +57,29 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
 
     private int accountType = AccountTypes.EXPENSES;
 
+    private boolean isEdit = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_category);
         unbinder = ButterKnife.bind(this);
 
-        accountType = getIntent().getIntExtra(KEY_CATEGORY_TYPE, AccountTypes.EXPENSES);
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Uri uri = intent.getData();
+        if (action != null && action.equals(Intent.ACTION_EDIT) && uri != null) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                editTextCategoryName.setText(cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME)));
+                selectedColor = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_COLOR));
+                selectedIcon = IconValue.values()[cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_ICON))];
+                accountType = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_TYPE));
+            }
+            isEdit = true;
+        } else {
+            accountType = intent.getIntExtra(KEY_CATEGORY_TYPE, AccountTypes.EXPENSES);
+        }
         setActivityTitle();
         fillDrawableCache();
         setColorSelectorColor();
@@ -76,7 +95,6 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
                         .show(AddCategoryActivity.this);
             }
         });
-
         adapter = new MaterialSimpleListAdapter(new MaterialSimpleListAdapter.Callback() {
             @Override
             public void onMaterialListItemSelected(MaterialDialog dialog, int index, MaterialSimpleListItem item) {
@@ -102,9 +120,17 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
 
     private void setActivityTitle() {
         if (accountType == AccountTypes.EXPENSES) {
-            setTitle(R.string.activity_title_add_expense_category);
+            if (isEdit) {
+                setTitle(R.string.activity_title_edit_expense_category);
+            } else {
+                setTitle(R.string.activity_title_add_expense_category);
+            }
         } else {
-            setTitle(R.string.activity_title_add_income_category);
+            if (isEdit) {
+                setTitle(R.string.activity_title_edit_income_category);
+            } else {
+                setTitle(R.string.activity_title_add_income_category);
+            }
         }
     }
 
@@ -164,11 +190,26 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (isEdit) {
+            MenuItem item = menu.findItem(R.id.action_delete);
+            if (item != null) {
+                item.setVisible(true);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_done) {
             try {
-                saveAccount();
+                if (isEdit) {
+                    updateAccount();
+                } else {
+                    saveAccount();
+                }
                 finish();
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage(), e);
@@ -177,13 +218,22 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
         return super.onOptionsItemSelected(item);
     }
 
+    private void updateAccount() {
+        getContentResolver().update(getIntent().getData(), getContentValues(), null, null);
+    }
+
     private void saveAccount() {
+        getContentResolver().insert(AccountEntry.CONTENT_URI, getContentValues());
+    }
+
+    @NonNull
+    private ContentValues getContentValues() {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DataContract.AccountEntry.COLUMN_NAME, editTextCategoryName.getText().toString().trim());
-        contentValues.put(DataContract.AccountEntry.COLUMN_TYPE, accountType);
-        contentValues.put(DataContract.AccountEntry.COLUMN_ICON, selectedIcon.ordinal());
-        contentValues.put(DataContract.AccountEntry.COLUMN_COLOR, selectedColor);
-        getContentResolver().insert(DataContract.AccountEntry.CONTENT_URI, contentValues);
+        contentValues.put(AccountEntry.COLUMN_NAME, editTextCategoryName.getText().toString().trim());
+        contentValues.put(AccountEntry.COLUMN_TYPE, accountType);
+        contentValues.put(AccountEntry.COLUMN_ICON, selectedIcon.ordinal());
+        contentValues.put(AccountEntry.COLUMN_COLOR, selectedColor);
+        return contentValues;
     }
 
     @Override
