@@ -4,15 +4,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.common.CursorRecyclerAdapter;
+import com.sanath.moneytracker.common.ItemClickListener;
 import com.sanath.moneytracker.common.Utils;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
-import com.sanath.moneytracker.data.DataContract.PostingEntry;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
@@ -24,9 +25,12 @@ public class AccountsAdapter extends CursorRecyclerAdapter<AccountsVH> {
 
     private final Context context;
 
-    public AccountsAdapter(Context context, Cursor c) {
+    private ItemClickListener<Uri> itemClickListener;
+
+    public AccountsAdapter(Context context, Cursor c, ItemClickListener<Uri> itemClickListener) {
         super(c);
         this.context = context;
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -39,24 +43,22 @@ public class AccountsAdapter extends CursorRecyclerAdapter<AccountsVH> {
         Drawable background = holder.imageViewAccountIcon.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
 
-        holder.textViewBalance.setText(Utils.getAmountWithCurrency(getBalance(cursor.getInt(cursor.getColumnIndex(AccountEntry._ID)))));
-    }
-
-    private double getBalance(int accountId) {
-        double balance = 0.0;
-        Cursor cursorBalance = context.getContentResolver().query(PostingEntry.CONTENT_URI,
-                new String[]{"sum(" + PostingEntry.COLUMN_AMOUNT + ") as balance"},
-                PostingEntry.COLUMN_ACCOUNT_ID + "=?",
-                new String[]{String.valueOf(accountId)}, null);
-        if (cursorBalance != null && cursorBalance.moveToFirst()) {
-            balance = cursorBalance.getDouble(cursorBalance.getColumnIndex("balance"));
-        }
-        return balance;
+        holder.textViewBalance.setText(Utils.getAmountWithCurrency(Utils.getBalance(context,cursor.getInt(cursor.getColumnIndex(AccountEntry._ID)))));
     }
 
     @Override
     public AccountsVH onCreateViewHolder(ViewGroup parent, int viewType) {
         View root = LayoutInflater.from(context).inflate(R.layout.list_item_account, parent, false);
-        return new AccountsVH(root);
+        final AccountsVH vh = new AccountsVH(root);
+        root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(
+                            AccountEntry.buildAccountUri(getItemId(vh.getAdapterPosition())));
+                }
+            }
+        });
+        return vh;
     }
 }

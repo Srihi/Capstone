@@ -2,9 +2,12 @@ package com.sanath.moneytracker.ui.activities;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.RemoteException;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -24,6 +27,9 @@ import com.afollestad.materialdialogs.simplelist.MaterialSimpleListItem;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.common.Utils;
 import com.sanath.moneytracker.data.DataContract;
+import com.sanath.moneytracker.data.DataContract.AccountEntry;
+import com.sanath.moneytracker.data.DataContract.JournalEntry;
+import com.sanath.moneytracker.data.DataContract.PostingEntry;
 import com.sanath.moneytracker.data.DataContract.TransactionTypes;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -37,8 +43,6 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-
-import static com.sanath.moneytracker.R.id.editTextDescription;
 
 public class AddAccountActivity extends AppCompatActivity implements ColorChooserDialog.ColorCallback {
 
@@ -65,12 +69,25 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
 
     private boolean isEdit = false;
 
+    private double currentBalance = 0.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
         unbinder = ButterKnife.bind(this);
-        setTitle(getString(R.string.activity_title_add_account));
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Uri uri = intent.getData();
+        if (action != null && action.equals(Intent.ACTION_EDIT) && uri != null) {
+            getAccountDetails(uri);
+            isEdit = true;
+            setTitle(getString(R.string.activity_title_edit_account));
+        } else {
+            setTitle(getString(R.string.activity_title_add_account));
+        }
+
         fillDrawableCache();
         setColorSelectorColor();
         addDefaultIcon();
@@ -107,6 +124,20 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
             }
         });
 
+    }
+
+    private void getAccountDetails(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            editTextAccountName.setText(cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME)));
+            selectedColor = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_COLOR));
+            selectedIcon = IconValue.values()[cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_ICON))];
+            cursor.close();
+        }
+
+        currentBalance = Utils.getBalance(this, Integer.valueOf(uri.getLastPathSegment()));
+
+        editTextBalance.setText(String.valueOf(currentBalance));
     }
 
     private MaterialDrawableBuilder getMaterialDrawableBuilder(IconValue selectedIcon) {
@@ -174,12 +205,28 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
         return true;
     }
 
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (isEdit) {
+            MenuItem item = menu.findItem(R.id.action_delete);
+            if (item != null) {
+                item.setVisible(true);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_done) {
             try {
-                saveAccount();
+                if (isEdit) {
+                    updateAccount();
+                } else {
+                    saveAccount();
+                }
                 finish();
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage(), e);
@@ -188,39 +235,54 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveAccount() {
-
+    private void updateAccount() {
         double amount = Double.parseDouble(editTextBalance.getText().toString());
         long transactionDateTime = new Date().getTime();
+        ContentValues accountValues = getContentValuesForAccount();
+        ArrayList<ContentProviderOperation> operations = new
+                ArrayList<>();
 
-        ContentValues accountValues = new ContentValues();
-        accountValues.put(DataContract.AccountEntry.COLUMN_NAME, editTextAccountName.getText().toString().trim());
-        accountValues.put(DataContract.AccountEntry.COLUMN_TYPE, DataContract.AccountTypes.TRANSFER);
-        accountValues.put(DataContract.AccountEntry.COLUMN_ICON, selectedIcon.ordinal());
-        accountValues.put(DataContract.AccountEntry.COLUMN_COLOR, selectedColor);
+        Uri uri = getIntent().getData();
+        operations.add(ContentProviderOperation.newUpdate(uri).withValues(accountValues).build());
 
-        ContentValues journalValues = new ContentValues();
-        journalValues.put(DataContract.JournalEntry.COLUMN_TYPE, TransactionTypes.BALANCE);
-        journalValues.put(DataContract.JournalEntry.COLUMN_PERIOD, sdfPeriod.format(transactionDateTime));
-        journalValues.put(DataContract.JournalEntry.COLUMN_DESCRIPTION, "balance");
-        journalValues.put(DataContract.JournalEntry.COLUMN_DATE_TIME, transactionDateTime);
+        if (Math.abs(getBalance(amount)) > 0) { // balance edited
+            ContentValues journalValues = getContentValuesForJournal(transactionDateTime, "change balance");
+            ContentValues postingValuesDestination = getContentValuesForPOsting(getBalance(amount), transactionDateTime);
+            postingValuesDestination.put(PostingEntry.COLUMN_ACCOUNT_ID, uri.getLastPathSegment());
+            operations.add(ContentProviderOperation.newInsert(JournalEntry.CONTENT_URI).withValues(journalValues).build());
+            operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
+                    withValues(postingValuesDestination)
+                    .withValueBackReference(PostingEntry.COLUMN_JOURNAL_ID, 1)
+                    .build());
+        }
 
-        ContentValues postingValuesDestination = new ContentValues();
-        postingValuesDestination.put(DataContract.PostingEntry.COLUMN_AMOUNT, amount);
-        postingValuesDestination.put(DataContract.PostingEntry.COLUMN_DATE_TIME, transactionDateTime);
-        postingValuesDestination.put(DataContract.PostingEntry.COLUMN_CREDIT_DEBIT, DataContract.CreditType.DEBIT);
+        try {
+            getContentResolver().applyBatch(DataContract.CONTENT_AUTHORITY, operations);
+        } catch (RemoteException | OperationApplicationException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+    }
+
+    private double getBalance(double amount) {
+        return amount - currentBalance;
+    }
+
+    private void saveAccount() {
+        double amount = Double.parseDouble(editTextBalance.getText().toString());
+        long transactionDateTime = new Date().getTime();
+        ContentValues accountValues = getContentValuesForAccount();
+        ContentValues journalValues = getContentValuesForJournal(transactionDateTime, "initial balance");
+        ContentValues postingValuesDestination = getContentValuesForPOsting(amount, transactionDateTime);
 
         ArrayList<ContentProviderOperation> operations = new
                 ArrayList<>();
 
-        operations.add(ContentProviderOperation.newInsert(DataContract.AccountEntry.CONTENT_URI).withValues(accountValues).build());
-
-        operations.add(ContentProviderOperation.newInsert(DataContract.JournalEntry.CONTENT_URI).withValues(journalValues).build());
-
-        operations.add(ContentProviderOperation.newInsert(DataContract.PostingEntry.CONTENT_URI).
+        operations.add(ContentProviderOperation.newInsert(AccountEntry.CONTENT_URI).withValues(accountValues).build());
+        operations.add(ContentProviderOperation.newInsert(JournalEntry.CONTENT_URI).withValues(journalValues).build());
+        operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
                 withValues(postingValuesDestination)
-                .withValueBackReference(DataContract.PostingEntry.COLUMN_ACCOUNT_ID, 0)
-                .withValueBackReference(DataContract.PostingEntry.COLUMN_JOURNAL_ID, 1)
+                .withValueBackReference(PostingEntry.COLUMN_ACCOUNT_ID, 0)
+                .withValueBackReference(PostingEntry.COLUMN_JOURNAL_ID, 1)
                 .build());
 
         try {
@@ -228,6 +290,35 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
         } catch (RemoteException | OperationApplicationException e) {
             Log.e(TAG, e.getMessage(), e);
         }
+    }
+
+    @NonNull
+    private ContentValues getContentValuesForPOsting(double amount, long transactionDateTime) {
+        ContentValues postingValuesDestination = new ContentValues();
+        postingValuesDestination.put(PostingEntry.COLUMN_AMOUNT, amount);
+        postingValuesDestination.put(PostingEntry.COLUMN_DATE_TIME, transactionDateTime);
+        postingValuesDestination.put(PostingEntry.COLUMN_CREDIT_DEBIT, DataContract.CreditType.DEBIT);
+        return postingValuesDestination;
+    }
+
+    @NonNull
+    private ContentValues getContentValuesForJournal(long transactionDateTime, String reason) {
+        ContentValues journalValues = new ContentValues();
+        journalValues.put(JournalEntry.COLUMN_TYPE, TransactionTypes.BALANCE);
+        journalValues.put(JournalEntry.COLUMN_PERIOD, sdfPeriod.format(transactionDateTime));
+        journalValues.put(JournalEntry.COLUMN_DESCRIPTION, reason);
+        journalValues.put(JournalEntry.COLUMN_DATE_TIME, transactionDateTime);
+        return journalValues;
+    }
+
+    @NonNull
+    private ContentValues getContentValuesForAccount() {
+        ContentValues accountValues = new ContentValues();
+        accountValues.put(AccountEntry.COLUMN_NAME, editTextAccountName.getText().toString().trim());
+        accountValues.put(AccountEntry.COLUMN_TYPE, DataContract.AccountTypes.TRANSFER);
+        accountValues.put(AccountEntry.COLUMN_ICON, selectedIcon.ordinal());
+        accountValues.put(AccountEntry.COLUMN_COLOR, selectedColor);
+        return accountValues;
     }
 
     @Override

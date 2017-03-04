@@ -114,7 +114,6 @@ public class CategoryChildFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onItemClick(Uri uri) {
-        Toast.makeText(getActivity(), "Uri " + uri.toString(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(Intent.ACTION_EDIT, uri, getActivity(), AddCategoryActivity.class);
         startActivity(intent);
     }
