@@ -205,7 +205,6 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
         return true;
     }
 
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (isEdit) {
@@ -247,7 +246,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
 
         if (Math.abs(getBalance(amount)) > 0) { // balance edited
             ContentValues journalValues = getContentValuesForJournal(transactionDateTime, "change balance");
-            ContentValues postingValuesDestination = getContentValuesForPOsting(getBalance(amount), transactionDateTime);
+            ContentValues postingValuesDestination = getContentValuesForPosting(getBalance(amount), transactionDateTime);
             postingValuesDestination.put(PostingEntry.COLUMN_ACCOUNT_ID, uri.getLastPathSegment());
             operations.add(ContentProviderOperation.newInsert(JournalEntry.CONTENT_URI).withValues(journalValues).build());
             operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
@@ -272,7 +271,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
         long transactionDateTime = new Date().getTime();
         ContentValues accountValues = getContentValuesForAccount();
         ContentValues journalValues = getContentValuesForJournal(transactionDateTime, "initial balance");
-        ContentValues postingValuesDestination = getContentValuesForPOsting(amount, transactionDateTime);
+        ContentValues postingValuesDestination = getContentValuesForPosting(amount, transactionDateTime);
 
         ArrayList<ContentProviderOperation> operations = new
                 ArrayList<>();
@@ -293,7 +292,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     }
 
     @NonNull
-    private ContentValues getContentValuesForPOsting(double amount, long transactionDateTime) {
+    private ContentValues getContentValuesForPosting(double amount, long transactionDateTime) {
         ContentValues postingValuesDestination = new ContentValues();
         postingValuesDestination.put(PostingEntry.COLUMN_AMOUNT, amount);
         postingValuesDestination.put(PostingEntry.COLUMN_DATE_TIME, transactionDateTime);

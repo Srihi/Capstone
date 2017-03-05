@@ -51,4 +51,12 @@
     <string name="activity_title_edit_expense_category">Edit Expense Category</string>
     <string name="activity_title_edit_income_category">Edit Income Category</string>
     <string name="activity_title_edit_account">Edit Account</string>
+
+    <!--app shortcuts -->
+    <string name="shortcut_long_label_transfer">Transfer Money</string>
+    <string name="shortcut_short_label_transfer">Transfer</string>
+    <string name="shortcut_long_label_expense">Add Expense</string>
+    <string name="shortcut_short_label_expense">Expense</string>
+    <string name="shortcut_long_label_income">Add Income</string>
+    <string name="shortcut_short_label_income">Income</string>
 </resources>

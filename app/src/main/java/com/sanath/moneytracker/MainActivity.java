@@ -1,5 +1,6 @@
 package com.sanath.moneytracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.sanath.moneytracker.common.Constant;
+import com.sanath.moneytracker.data.DataContract;
+import com.sanath.moneytracker.ui.activities.AddTransactionActivity;
 import com.sanath.moneytracker.ui.fragments.AccountsFragment;
 import com.sanath.moneytracker.ui.fragments.CategoriesFragment;
 import com.sanath.moneytracker.ui.fragments.SummaryFragment;
@@ -40,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        manageAppShortCutsLinks();
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -58,6 +63,28 @@ public class MainActivity extends AppCompatActivity
             navigationView.getMenu().getItem(0).setChecked(true);
         }
 
+    }
+
+    private void manageAppShortCutsLinks() {
+        String action = getIntent().getAction();
+        if (action != null) {
+            if (action.equals(Constant.ACTION_ADD_EXPENSE)) {
+                startActivity(
+                        new Intent(this, AddTransactionActivity.class)
+                                .putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE,
+                                        DataContract.TransactionTypes.EXPENSES));
+            } else if (action.equals(Constant.ACTION_ADD_INCOME)) {
+                startActivity(
+                        new Intent(this, AddTransactionActivity.class)
+                                .putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE,
+                                        DataContract.TransactionTypes.INCOME));
+            } else if (action.equals(Constant.ACTION_ADD_TRANSFER)) {
+                startActivity(
+                        new Intent(this, AddTransactionActivity.class)
+                                .putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE,
+                                        DataContract.TransactionTypes.TRANSFER));
+            }
+        }
     }
 
     @Override
