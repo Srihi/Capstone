@@ -35,10 +35,8 @@ import com.sanath.moneytracker.data.DataContract.TransactionTypes;
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder.IconValue;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,8 +62,6 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     private ArrayList<IconValue> drawableCache = new ArrayList<>(3);
     private int selectedColor = Color.GRAY;
     private IconValue selectedIcon = IconValue.BANK;
-
-    private SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
 
     private boolean isEdit = false;
 
@@ -304,7 +300,7 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
     private ContentValues getContentValuesForJournal(long transactionDateTime, String reason) {
         ContentValues journalValues = new ContentValues();
         journalValues.put(JournalEntry.COLUMN_TYPE, TransactionTypes.BALANCE);
-        journalValues.put(JournalEntry.COLUMN_PERIOD, sdfPeriod.format(transactionDateTime));
+        journalValues.put(JournalEntry.COLUMN_PERIOD, Utils.getPeriodTag(transactionDateTime));
         journalValues.put(JournalEntry.COLUMN_DESCRIPTION, reason);
         journalValues.put(JournalEntry.COLUMN_DATE_TIME, transactionDateTime);
         return journalValues;

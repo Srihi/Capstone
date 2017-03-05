@@ -15,6 +15,7 @@ import com.sanath.moneytracker.data.DataContract;
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
@@ -56,5 +57,10 @@ public class Utils {
             cursorBalance.close();
         }
         return balance;
+    }
+
+    public static String getPeriodTag(long transactionDateTime) {
+        SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
+        return sdfPeriod.format(transactionDateTime);
     }
 }

@@ -3,6 +3,11 @@ package com.sanath.moneytracker.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.sanath.moneytracker.common.Utils;
+
+import java.util.Date;
 
 import static com.sanath.moneytracker.data.DataContract.*;
 
@@ -11,6 +16,7 @@ import static com.sanath.moneytracker.data.DataContract.*;
  */
 
 public class DataHelper extends SQLiteOpenHelper {
+    private static final String TAG = DataHelper.class.getSimpleName();
 
     private final static String DATABASE_NAME = "money_tracker.db";
     private final static int DATABASE_VERSION = 1;
@@ -24,6 +30,67 @@ public class DataHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_ACCOUNT_TABLE);
         db.execSQL(CREATE_JOURNAL_TABLE);
         db.execSQL(CREATE_POSTING_TABLE);
+
+        addInitialData(db);
+    }
+
+    private void addInitialData(SQLiteDatabase db) {
+        db.beginTransaction();
+        try {
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (1,'Bank',	0,111,-12627531);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (2,'Wallet',0,1411,-1683200);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (3,'Other',0,275,-14273992);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (4,'Food',2,601,-10044566);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (5,'Shopping',2,271,-769226);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (6,'Car',2,266,-2825897);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (7,'Fuel',2,663,-5317	);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (8,'Home',2,731,-10011977	);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (9,'Medical',2,1240,-3790808);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (10,'Education',2,1139,-14273992);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (11,'Coffee',2,373,-7508381);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (12,'Gift',2,672,-688361	);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (13,'Salary',1,213,-1023342);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (14,'Freelance',1,275,-5434281);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (15,'Other',	1,890,-14244198);");
+            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( " + AccountEntry._ID + ", " + AccountEntry.COLUMN_NAME + "," + AccountEntry.COLUMN_TYPE + "," + AccountEntry.COLUMN_ICON + "," + AccountEntry.COLUMN_COLOR + " ) "
+                    + "VALUES (16,'Other',	2,890,-8875876);");
+            long time = new Date().getTime();
+            String period = Utils.getPeriodTag(time);
+
+            db.execSQL("INSERT INTO " + JournalEntry.TABLE_NAME + " ( " + JournalEntry._ID + ", " + JournalEntry.COLUMN_DESCRIPTION + "," + JournalEntry.COLUMN_TYPE + "," + JournalEntry.COLUMN_PERIOD + "," + JournalEntry.COLUMN_DATE_TIME + " ) "
+                    + "VALUES (1,	'initial balance',	0	," + period + "	," + time + "	);");
+            db.execSQL("INSERT INTO " + JournalEntry.TABLE_NAME + " ( " + JournalEntry._ID + ", " + JournalEntry.COLUMN_DESCRIPTION + "," + JournalEntry.COLUMN_TYPE + "," + JournalEntry.COLUMN_PERIOD + "," + JournalEntry.COLUMN_DATE_TIME + " ) "
+                    + "VALUES (2,	'initial balance',	0	," + period + "	," + time + "	);");
+            db.execSQL("INSERT INTO " + JournalEntry.TABLE_NAME + " ( " + JournalEntry._ID + ", " + JournalEntry.COLUMN_DESCRIPTION + "," + JournalEntry.COLUMN_TYPE + "," + JournalEntry.COLUMN_PERIOD + "," + JournalEntry.COLUMN_DATE_TIME + " ) "
+                    + "VALUES (3,	'initial balance',	0	," + period + "	," + time + "	);");
+
+            db.execSQL("INSERT INTO " + PostingEntry.TABLE_NAME + " ( " + PostingEntry._ID + ", " + PostingEntry.COLUMN_JOURNAL_ID + "," + PostingEntry.COLUMN_ACCOUNT_ID + "," + PostingEntry.COLUMN_CREDIT_DEBIT + "," + PostingEntry.COLUMN_AMOUNT + "," + PostingEntry.COLUMN_DATE_TIME + " ) "
+                    + "VALUES (1, 1, 1, 1, 0.0," + time + "	);");
+            db.execSQL("INSERT INTO " + PostingEntry.TABLE_NAME + " ( " + PostingEntry._ID + ", " + PostingEntry.COLUMN_JOURNAL_ID + "," + PostingEntry.COLUMN_ACCOUNT_ID + "," + PostingEntry.COLUMN_CREDIT_DEBIT + "," + PostingEntry.COLUMN_AMOUNT + "," + PostingEntry.COLUMN_DATE_TIME + " ) "
+                    + "VALUES (2, 2, 2, 1, 0.0," + time + "	);");
+            db.execSQL("INSERT INTO " + PostingEntry.TABLE_NAME + " ( " + PostingEntry._ID + ", " + PostingEntry.COLUMN_JOURNAL_ID + "," + PostingEntry.COLUMN_ACCOUNT_ID + "," + PostingEntry.COLUMN_CREDIT_DEBIT + "," + PostingEntry.COLUMN_AMOUNT + "," + PostingEntry.COLUMN_DATE_TIME + " ) "
+                    + "VALUES (3, 3, 3, 1, 0.0," + time + "	);");
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override
