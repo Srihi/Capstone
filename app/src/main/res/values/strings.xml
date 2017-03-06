@@ -59,4 +59,7 @@
     <string name="shortcut_short_label_expense">Expense</string>
     <string name="shortcut_long_label_income">Add Income</string>
     <string name="shortcut_short_label_income">Income</string>
+
+    <!--admob testing ad unit-->
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 </resources>

@@ -24,6 +24,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.adapters.AccountsSpinnerAdapter;
 import com.sanath.moneytracker.data.DataContract;
@@ -72,6 +75,8 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     EditText editTextDate;
     @BindView(R.id.editTextDescription)
     EditText editTextDescription;
+    @BindView(R.id.adView)
+    AdView adView;
 
     private Unbinder unbinder;
 
@@ -100,6 +105,32 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         initLoaders();
 
         setLabels();
+
+        loadAdMobBannerAd();
+    }
+
+    private void loadAdMobBannerAd() {
+        final AdRequest adRequest = new AdRequest.Builder().build();
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                adView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                adView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                adView.setVisibility(View.GONE);
+            }
+        });
+        adView.loadAd(adRequest);
     }
 
     private void setupUI() {
