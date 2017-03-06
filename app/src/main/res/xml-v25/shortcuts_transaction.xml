@@ -2,7 +2,7 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/ic_expense"
+        android:icon="@drawable/ic_shortcut_expense"
         android:shortcutId="expense"
         android:shortcutLongLabel="@string/shortcut_long_label_expense"
         android:shortcutShortLabel="@string/shortcut_short_label_expense">
@@ -14,7 +14,7 @@
     </shortcut>
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/ic_income"
+        android:icon="@drawable/ic_shortcut_income"
         android:shortcutId="income"
         android:shortcutLongLabel="@string/shortcut_long_label_income"
         android:shortcutShortLabel="@string/shortcut_short_label_income">
@@ -26,7 +26,7 @@
     </shortcut>
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/ic_transfer"
+        android:icon="@drawable/ic_shortcut_transfer"
         android:shortcutId="transfer"
         android:shortcutLongLabel="@string/shortcut_long_label_transfer"
         android:shortcutShortLabel="@string/shortcut_short_label_transfer">
