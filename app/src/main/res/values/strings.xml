@@ -62,4 +62,8 @@
 
     <!--admob testing ad unit-->
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="analytic_tag_transaction">transaction</string>
+    <string name="analytic_tag_expenses">expenses</string>
+    <string name="analytic_tag_income">income</string>
+    <string name="analytic_tag_transfer">transfer</string>
 </resources>

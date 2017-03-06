@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.adapters.AccountsSpinnerAdapter;
 import com.sanath.moneytracker.data.DataContract;
@@ -91,11 +92,15 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     private SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
 
+    private FirebaseAnalytics analytics;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_transaction);
         unbinder = ButterKnife.bind(this);
+        analytics = FirebaseAnalytics.getInstance(this);
         transactionType = getIntent().getIntExtra(KEY_TRANSACTION_TYPE, TransactionTypes.INCOME);
         isEdit = getIntent().getBooleanExtra(KEY_IS_EDIT, false);
         setActivityTitle();
@@ -186,10 +191,32 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
                 withValues(postingValuesDestination).withValueBackReference(PostingEntry.COLUMN_JOURNAL_ID, 0).build());
 
+        logTransactionToAnalytics();
+
         try {
             getContentResolver().applyBatch(DataContract.CONTENT_AUTHORITY, operations);
         } catch (RemoteException | OperationApplicationException e) {
             Log.e(TAG, e.getMessage(), e);
+        }
+    }
+
+    private void logTransactionToAnalytics() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, getString(R.string.analytic_tag_transaction));
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, getName());
+        analytics.logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
+    }
+
+    private String getName() {
+        switch (transactionType) {
+            case TransactionTypes.EXPENSES:
+                return getString(R.string.analytic_tag_expenses);
+            case TransactionTypes.INCOME:
+                return getString(R.string.analytic_tag_income);
+            case TransactionTypes.TRANSFER:
+                return getString(R.string.analytic_tag_transfer);
+            default:
+                return getString(R.string.analytic_tag_expenses);
         }
     }
 

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "21455285932",
+    "firebase_url": "https://capstone-df29f.firebaseio.com",
+    "project_id": "capstone-df29f",
+    "storage_bucket": "capstone-df29f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:21455285932:android:edf77e98584cb39a",
+        "android_client_info": {
+          "package_name": "com.sanath.moneytracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "21455285932-2497al70pvnjp8eioq795qiah2d43q84.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sanath.moneytracker",
+            "certificate_hash": "34d2e2a0f18b2c0632558aa942d0fbe37dcfa7e9"
+          }
+        },
+        {
+          "client_id": "21455285932-1qcd0hpbso7k9q82auupgraq3tpc71ld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHbT_2qXXUQQaS_t9zrBjqHXPHx2VEKS8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "21455285932-1qcd0hpbso7k9q82auupgraq3tpc71ld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
