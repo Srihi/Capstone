@@ -264,9 +264,9 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
             case TransactionTypes.ALL:
                 return ALL_TRANSACTION_SELECTION;
             case TransactionTypes.EXPENSES:
-                return "((account.type == 1 and journal.type == 2 and posting.credit_debit == 0) and period == ?)";
-            case TransactionTypes.INCOME:
                 return "((account.type == 2 and journal.type == 3 and posting.credit_debit == 1) and period == ?)";
+            case TransactionTypes.INCOME:
+                return "((account.type == 1 and journal.type == 2 and posting.credit_debit == 0) and period == ?)";
             case TransactionTypes.TRANSFER:
                 return "((account.type == 0 and journal.type == 1 and posting.credit_debit == 1) and period == ?)";
             default:
