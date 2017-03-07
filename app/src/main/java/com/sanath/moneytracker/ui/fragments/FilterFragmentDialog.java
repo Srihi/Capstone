@@ -48,6 +48,7 @@ public class FilterFragmentDialog extends BottomSheetDialogFragment implements V
         selectedFilterType = getArguments().getInt(KEY_SELECTED_FILTER, TransactionTypes.ALL);
     }
 
+    @SuppressWarnings("RestrictedApi")
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);

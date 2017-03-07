@@ -120,19 +120,25 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                adView.setVisibility(View.VISIBLE);
+                if (adView!= null) {
+                    adView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void onAdFailedToLoad(int i) {
                 super.onAdFailedToLoad(i);
-                adView.setVisibility(View.GONE);
+                if (adView!= null) {
+                    adView.setVisibility(View.GONE);
+                }
             }
 
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                adView.setVisibility(View.GONE);
+                if (adView!= null) {
+                    adView.setVisibility(View.GONE);
+                }
             }
         });
         adView.loadAd(adRequest);
