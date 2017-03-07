@@ -4,6 +4,22 @@ apply plugin: 'android-apt'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
+    def keystorePassword = 'capstone'
+    def keystoreKeyAlias = 'capstone'
+    def keystoreKeyPassword = 'capstone'
+
+    signingConfigs {
+        if (keystorePassword != null) {
+            releaseCapstone {
+                storeFile file('capstone.keystore.jks')
+                storePassword keystorePassword
+                keyAlias keystoreKeyAlias
+                keyPassword keystoreKeyPassword
+            }
+        }
+    }
+
     defaultConfig {
         applicationId "com.sanath.moneytracker"
         minSdkVersion 19
@@ -15,6 +31,7 @@ android {
     }
     buildTypes {
         release {
+            signingConfig signingConfigs.releaseCapstone
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
