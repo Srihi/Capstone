@@ -66,4 +66,7 @@
     <string name="analytic_tag_expenses">expenses</string>
     <string name="analytic_tag_income">income</string>
     <string name="analytic_tag_transfer">transfer</string>
+    <string name="amount">Amount</string>
+    <string name="date">Date</string>
+    <string name="description">Description</string>
 </resources>

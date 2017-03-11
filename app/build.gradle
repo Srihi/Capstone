@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId "com.sanath.moneytracker"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -49,7 +49,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0'
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.android.support:support-v4:25.1.0'
-    compile 'com.google.android.gms:play-services-ads:10.0.1'
     compile 'com.facebook.stetho:stetho:1.4.2'
     compile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
     compile 'net.steamcrafted:materialiconlib:1.1.2'

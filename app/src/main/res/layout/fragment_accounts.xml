@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.sanath.moneytracker.ui.fragments.AccountsFragment"
+    android:layoutDirection="@integer/layout_direction"
     tools:showIn="@layout/app_bar_main">
 
     <android.support.v7.widget.RecyclerView
