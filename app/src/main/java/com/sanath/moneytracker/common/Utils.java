@@ -63,4 +63,24 @@ public class Utils {
         SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
         return sdfPeriod.format(transactionDateTime);
     }
+
+    @NonNull
+    public static String[] getProjectionForTransaction() {
+        return new String[]{
+                DataContract.JournalEntry.TABLE_NAME + "." + DataContract.JournalEntry._ID,
+                DataContract.PostingEntry.TABLE_NAME + "." + DataContract.PostingEntry.COLUMN_ACCOUNT_ID,
+                DataContract.PostingEntry.TABLE_NAME + "." + DataContract.PostingEntry.COLUMN_JOURNAL_ID,
+                DataContract.PostingEntry.TABLE_NAME + "." + DataContract.PostingEntry.COLUMN_AMOUNT,
+                DataContract.PostingEntry.TABLE_NAME + "." + DataContract.PostingEntry.COLUMN_CREDIT_DEBIT,
+                DataContract.PostingEntry.TABLE_NAME + "." + DataContract.PostingEntry.COLUMN_DATE_TIME,
+                DataContract.JournalEntry.TABLE_NAME + "." + DataContract.JournalEntry.COLUMN_DESCRIPTION,
+                DataContract.JournalEntry.TABLE_NAME + "." + DataContract.JournalEntry.COLUMN_PERIOD,
+                DataContract.JournalEntry.TABLE_NAME + "." + DataContract.JournalEntry.COLUMN_TYPE + " as " + DataContract.TransactionEntry.TRANSACTION_TYPE,
+                DataContract.AccountEntry.TABLE_NAME + "." + DataContract.AccountEntry.COLUMN_NAME,
+                DataContract.AccountEntry.TABLE_NAME + "." + DataContract.AccountEntry.COLUMN_TYPE + " as " + DataContract.AccountEntry.ACCOUNT_TYPE,
+                DataContract.PostingEntry.TABLE_NAME + "." + DataContract.PostingEntry._ID + " as " + DataContract.TransactionEntry.POSTING_ID,
+                DataContract.AccountEntry.TABLE_NAME + "." + DataContract.AccountEntry.COLUMN_COLOR,
+                DataContract.AccountEntry.TABLE_NAME + "." + DataContract.AccountEntry.COLUMN_ICON,
+        };
+    }
 }

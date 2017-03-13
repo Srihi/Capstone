@@ -82,10 +82,49 @@ public class DataProvider extends ContentProvider {
                 rows = database.delete(AccountEntry.TABLE_NAME, selection, selectionArgs);
             }
             break;
+            case POSTING: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.delete(PostingEntry.TABLE_NAME,
+                            PostingEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.delete(PostingEntry.TABLE_NAME,
+                            PostingEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case POSTINGS: {
+                rows = database.delete(PostingEntry.TABLE_NAME, selection, selectionArgs);
+            }
+            break;
+            case JOURNAL: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.delete(JournalEntry.TABLE_NAME,
+                            JournalEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.delete(JournalEntry.TABLE_NAME,
+                            JournalEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case JOURNALS: {
+                rows = database.delete(AccountEntry.TABLE_NAME, selection, selectionArgs);
+            }
+            break;
             default:
                 throw new UnsupportedOperationException("Unknown uri" + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
         return rows;
     }
 
@@ -176,6 +215,10 @@ public class DataProvider extends ContentProvider {
                 cursor = database.query(AccountEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
             }
             break;
+            case JOURNAL: {
+                cursor = database.query(JournalEntry.TABLE_NAME, projection, JournalEntry._ID + "=?", new String[]{uri.getLastPathSegment()}, null, null, sortOrder);
+            }
+            break;
             case JOURNALS: {
                 cursor = database.query(JournalEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
             }
@@ -237,10 +280,53 @@ public class DataProvider extends ContentProvider {
                 rows = database.update(AccountEntry.TABLE_NAME, values, selection, selectionArgs);
             }
             break;
+            case POSTING: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.update(PostingEntry.TABLE_NAME,
+                            values,
+                            PostingEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.update(PostingEntry.TABLE_NAME,
+                            values,
+                            PostingEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case POSTINGS: {
+                rows = database.update(PostingEntry.TABLE_NAME, values, selection, selectionArgs);
+            }
+            break;
+            case JOURNAL: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.update(JournalEntry.TABLE_NAME,
+                            values,
+                            JournalEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.update(JournalEntry.TABLE_NAME,
+                            values,
+                            JournalEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case JOURNALS: {
+                rows = database.update(PostingEntry.TABLE_NAME, values, selection, selectionArgs);
+            }
+            break;
             default:
                 throw new UnsupportedOperationException("Unknown uri" + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
         return rows;
     }
 }

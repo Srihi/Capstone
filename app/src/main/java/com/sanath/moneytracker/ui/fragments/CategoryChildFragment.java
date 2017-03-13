@@ -1,7 +1,6 @@
 package com.sanath.moneytracker.ui.fragments;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -17,7 +16,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.adapters.CategoriesAdapter;
@@ -114,7 +112,6 @@ public class CategoryChildFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onItemClick(Uri uri) {
-        Intent intent = new Intent(Intent.ACTION_EDIT, uri, getActivity(), AddCategoryActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(Intent.ACTION_EDIT, uri, getActivity(), AddCategoryActivity.class));
     }
 }

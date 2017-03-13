@@ -3,9 +3,11 @@ package com.sanath.moneytracker.ui.activities;
 import android.app.DatePickerDialog;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -30,10 +32,12 @@ import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.adapters.AccountsSpinnerAdapter;
+import com.sanath.moneytracker.common.Utils;
 import com.sanath.moneytracker.data.DataContract;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
 import com.sanath.moneytracker.data.DataContract.JournalEntry;
 import com.sanath.moneytracker.data.DataContract.PostingEntry;
+import com.sanath.moneytracker.data.DataContract.TransactionEntry;
 import com.sanath.moneytracker.data.DataContract.TransactionTypes;
 
 import java.text.SimpleDateFormat;
@@ -87,12 +91,20 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     private AccountsSpinnerAdapter sourceAccountAdapter;
     private AccountsSpinnerAdapter destinationAccountAdapter;
     private int selectedSourceAccount;
+    private int selectedDestinationAccount;
 
     private Date transactionDate;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     private SimpleDateFormat sdfPeriod = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
 
     private FirebaseAnalytics analytics;
+
+    private double amount = 0.0;
+
+    private boolean isAccountDataLoaded = false;
+
+    private int postingSourceId = -1;
+    private int postingDestinationId = -1;
 
 
     @Override
@@ -101,17 +113,68 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         setContentView(R.layout.activity_add_transaction);
         unbinder = ButterKnife.bind(this);
         analytics = FirebaseAnalytics.getInstance(this);
-        transactionType = getIntent().getIntExtra(KEY_TRANSACTION_TYPE, TransactionTypes.INCOME);
-        isEdit = getIntent().getBooleanExtra(KEY_IS_EDIT, false);
-        setActivityTitle();
 
         setupUI();
 
-        initLoaders();
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Uri uri = intent.getData();
+        if (action != null && action.equals(Intent.ACTION_EDIT) && uri != null) {
+            getTransactionDetails(uri);
+            isEdit = true;
+        } else {
+            transactionType = getIntent().getIntExtra(KEY_TRANSACTION_TYPE, TransactionTypes.INCOME);
+            isEdit = getIntent().getBooleanExtra(KEY_IS_EDIT, false);
+            initLoaders();
+        }
 
+        setActivityTitle();
         setLabels();
-
         loadAdMobBannerAd();
+    }
+
+    private void getTransactionDetails(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            transactionType = cursor.getInt(cursor.getColumnIndex(JournalEntry.COLUMN_TYPE));
+            editTextDescription.setText(cursor.getString(cursor.getColumnIndex(JournalEntry.COLUMN_DESCRIPTION)));
+            transactionDate = new Date(cursor.getLong(cursor.getColumnIndex(JournalEntry.COLUMN_DATE_TIME)));
+            setFormattedDate(transactionDate);
+            initLoaders();
+            cursor.close();
+        }
+    }
+
+    private void loadAccountData(Uri uri) {
+        Cursor cursorSourceTransaction = getContentResolver().query(TransactionEntry.CONTENT_URI,
+                Utils.getProjectionForTransaction(),
+                JournalEntry.TABLE_NAME + "." + JournalEntry._ID + "=?",
+                new String[]{uri.getLastPathSegment()},
+                TransactionEntry.COLUMN_CREDIT_DEBIT + " ASC");
+        if (cursorSourceTransaction != null && cursorSourceTransaction.moveToFirst()) {
+            amount = Math.abs(cursorSourceTransaction.getDouble(cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_AMOUNT)));
+            editTextAmount.setText(String.valueOf(amount));
+            selectedSourceAccount = cursorSourceTransaction.getInt(
+                    cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_ACCOUNT_ID));
+            postingSourceId = cursorSourceTransaction.getInt(cursorSourceTransaction.getColumnIndex(TransactionEntry.POSTING_ID));
+            if (selectedSourceAccount != -1) {
+                spinnerSourceAccount.setSelection(
+                        sourceAccountAdapter.getSelectedAccountPosition(selectedSourceAccount));
+            }
+
+            if (cursorSourceTransaction.moveToNext()) {
+                selectedDestinationAccount = cursorSourceTransaction.getInt(
+                        cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_ACCOUNT_ID));
+                postingDestinationId = cursorSourceTransaction.getInt(cursorSourceTransaction.getColumnIndex(TransactionEntry.POSTING_ID));
+
+                if (selectedDestinationAccount != -1) {
+                    spinnerDestinationAccount.setSelection(
+                            destinationAccountAdapter.getSelectedAccountPosition(selectedDestinationAccount));
+                }
+            }
+            cursorSourceTransaction.close();
+        }
+        isAccountDataLoaded = true;
     }
 
     private void loadAdMobBannerAd() {
@@ -120,7 +183,7 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                if (adView!= null) {
+                if (adView != null) {
                     adView.setVisibility(View.VISIBLE);
                 }
             }
@@ -128,7 +191,7 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             @Override
             public void onAdFailedToLoad(int i) {
                 super.onAdFailedToLoad(i);
-                if (adView!= null) {
+                if (adView != null) {
                     adView.setVisibility(View.GONE);
                 }
             }
@@ -136,7 +199,7 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                if (adView!= null) {
+                if (adView != null) {
                     adView.setVisibility(View.GONE);
                 }
             }
@@ -163,39 +226,50 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     private void saveTransaction() {
         //save transactions here
         double amount = Double.parseDouble(editTextAmount.getText().toString());
-
-
         long transactionDateTime = transactionDate.getTime();
         int sourceAccountId = getSelectedAccountId(((Cursor) spinnerSourceAccount.getSelectedItem()));
         int destinationAccountId = getSelectedAccountId(((Cursor) spinnerDestinationAccount.getSelectedItem()));
 
-        ContentValues journalValues = new ContentValues();
-        journalValues.put(JournalEntry.COLUMN_TYPE, transactionType);
-        journalValues.put(JournalEntry.COLUMN_PERIOD, sdfPeriod.format(transactionDateTime));
-        journalValues.put(JournalEntry.COLUMN_DESCRIPTION, editTextDescription.getText().toString());
-        journalValues.put(JournalEntry.COLUMN_DATE_TIME, transactionDateTime);
+        ContentValues journalValues = getJournalContentValues(transactionDateTime);
 
-        ContentValues postingValuesSource = new ContentValues();
-        postingValuesSource.put(PostingEntry.COLUMN_ACCOUNT_ID, sourceAccountId);
-        postingValuesSource.put(PostingEntry.COLUMN_AMOUNT, -amount);
-        postingValuesSource.put(PostingEntry.COLUMN_DATE_TIME, transactionDateTime);
-        postingValuesSource.put(DataContract.PostingEntry.COLUMN_CREDIT_DEBIT, DataContract.CreditType.CREDIT);
+        ContentValues postingValuesSource =
+                getPostingSourceContentValues(transactionDateTime,
+                        sourceAccountId,
+                        -amount,
+                        PostingEntry.COLUMN_CREDIT_DEBIT,
+                        DataContract.CreditType.CREDIT);
 
-        ContentValues postingValuesDestination = new ContentValues();
-        postingValuesDestination.put(PostingEntry.COLUMN_ACCOUNT_ID, destinationAccountId);
-        postingValuesDestination.put(PostingEntry.COLUMN_AMOUNT, amount);
-        postingValuesDestination.put(PostingEntry.COLUMN_DATE_TIME, transactionDateTime);
-        postingValuesDestination.put(DataContract.PostingEntry.COLUMN_CREDIT_DEBIT, DataContract.CreditType.DEBIT);
+        ContentValues postingValuesDestination =
+                getPostingSourceContentValues(transactionDateTime,
+                        destinationAccountId,
+                        amount,
+                        PostingEntry.COLUMN_CREDIT_DEBIT,
+                        DataContract.CreditType.DEBIT);
 
-        ArrayList<ContentProviderOperation> operations = new
-                ArrayList<>();
-        operations.add(ContentProviderOperation.newInsert(JournalEntry.CONTENT_URI).withValues(journalValues).build());
+        ArrayList<ContentProviderOperation> operations = null;
+        if (isEdit) {
+            String journalId = getIntent().getData().getLastPathSegment();
+            operations = new
+                    ArrayList<>();
+            operations.add(ContentProviderOperation.newUpdate(JournalEntry.buildAccountUri(Long.valueOf(journalId)))
+                    .withValues(journalValues).build());
 
-        operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
-                withValues(postingValuesSource).withValueBackReference(PostingEntry.COLUMN_JOURNAL_ID, 0).build());
+            operations.add(ContentProviderOperation.newUpdate(PostingEntry.buildAccountUri(postingSourceId)).
+                    withValues(postingValuesSource).build());
 
-        operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
-                withValues(postingValuesDestination).withValueBackReference(PostingEntry.COLUMN_JOURNAL_ID, 0).build());
+            operations.add(ContentProviderOperation.newUpdate(PostingEntry.buildAccountUri(postingDestinationId)).
+                    withValues(postingValuesDestination).build());
+        } else {
+            operations = new
+                    ArrayList<>();
+            operations.add(ContentProviderOperation.newInsert(JournalEntry.CONTENT_URI).withValues(journalValues).build());
+
+            operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
+                    withValues(postingValuesSource).withValueBackReference(PostingEntry.COLUMN_JOURNAL_ID, 0).build());
+
+            operations.add(ContentProviderOperation.newInsert(PostingEntry.CONTENT_URI).
+                    withValues(postingValuesDestination).withValueBackReference(PostingEntry.COLUMN_JOURNAL_ID, 0).build());
+        }
 
         logTransactionToAnalytics();
 
@@ -204,6 +278,26 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         } catch (RemoteException | OperationApplicationException e) {
             Log.e(TAG, e.getMessage(), e);
         }
+    }
+
+    @NonNull
+    private ContentValues getPostingSourceContentValues(long transactionDateTime, int sourceAccountId, double value, String columnCreditDebit, int credit) {
+        ContentValues postingValuesSource = new ContentValues();
+        postingValuesSource.put(PostingEntry.COLUMN_ACCOUNT_ID, sourceAccountId);
+        postingValuesSource.put(PostingEntry.COLUMN_AMOUNT, value);
+        postingValuesSource.put(PostingEntry.COLUMN_DATE_TIME, transactionDateTime);
+        postingValuesSource.put(columnCreditDebit, credit);
+        return postingValuesSource;
+    }
+
+    @NonNull
+    private ContentValues getJournalContentValues(long transactionDateTime) {
+        ContentValues journalValues = new ContentValues();
+        journalValues.put(JournalEntry.COLUMN_TYPE, transactionType);
+        journalValues.put(JournalEntry.COLUMN_PERIOD, sdfPeriod.format(transactionDateTime));
+        journalValues.put(JournalEntry.COLUMN_DESCRIPTION, editTextDescription.getText().toString());
+        journalValues.put(JournalEntry.COLUMN_DATE_TIME, transactionDateTime);
+        return journalValues;
     }
 
     private void logTransactionToAnalytics() {
@@ -293,13 +387,15 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
 
 
     private void setActivityTitle() {
+        int id = R.string.activity_title_add_income;
         if (transactionType == TransactionTypes.INCOME) {
-            setTitle(getString(R.string.activity_title_add_income));
+            id = isEdit ? R.string.activity_title_edit_income : R.string.activity_title_add_income;
         } else if (transactionType == TransactionTypes.EXPENSES) {
-            setTitle(getString(R.string.activity_title_add_expense));
+            id = isEdit ? R.string.activity_title_edit_expense : R.string.activity_title_add_expense;
         } else if (transactionType == TransactionTypes.TRANSFER) {
-            setTitle(getString(R.string.activity_title_add_transfer));
+            id = isEdit ? R.string.activity_title_edit_transfer : R.string.activity_title_add_transfer;
         }
+        setTitle(id);
     }
 
     @Override
@@ -359,6 +455,9 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
                 sourceAccountAdapter.swapCursor(data);
             }
             DatabaseUtils.dumpCursor(data);
+        }
+        if (isEdit && !isAccountDataLoaded) {
+            loadAccountData(getIntent().getData());
         }
     }
 

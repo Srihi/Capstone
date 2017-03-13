@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -13,7 +14,9 @@ import android.view.ViewGroup;
 
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.common.CursorRecyclerAdapter;
+import com.sanath.moneytracker.common.ItemClickListener;
 import com.sanath.moneytracker.common.Utils;
+import com.sanath.moneytracker.data.DataContract;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
 import com.sanath.moneytracker.data.DataContract.JournalEntry;
 import com.sanath.moneytracker.data.DataContract.TransactionEntry;
@@ -59,9 +62,12 @@ public class TransactionAdapter extends CursorRecyclerAdapter<TransactionsVH> {
 
     private SimpleDateFormat sdfPeriod = new SimpleDateFormat("E, d", Locale.getDefault());
 
-    public TransactionAdapter(Context context, Cursor c) {
+    private ItemClickListener<Uri> itemClickListener;
+
+    public TransactionAdapter(Context context, Cursor c, ItemClickListener<Uri> itemClickListener) {
         super(c);
         this.context = context;
+        this.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -163,7 +169,17 @@ public class TransactionAdapter extends CursorRecyclerAdapter<TransactionsVH> {
     @Override
     public TransactionsVH onCreateViewHolder(ViewGroup parent, int viewType) {
         View root = LayoutInflater.from(context).inflate(R.layout.list_item_transactions, parent, false);
-        return new TransactionsVH(root);
+        final TransactionsVH vh = new TransactionsVH(root);
+        root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(
+                            JournalEntry.buildAccountUri(getItemId(vh.getAdapterPosition())));
+                }
+            }
+        });
+        return vh;
     }
 
     @Override

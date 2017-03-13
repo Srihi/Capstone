@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.common.Utils;
+import com.sanath.moneytracker.data.DataContract;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -45,5 +46,19 @@ public class AccountsSpinnerAdapter extends CursorAdapter implements SpinnerAdap
         imageView.setImageDrawable(builder.build());
         Drawable background = imageView.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
+    }
+
+    public int getSelectedAccountPosition(int accountId) {
+        Cursor cursor = getCursor();
+        if (cursor == null) {
+            return -1;
+        }
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToPosition(i);
+            if (cursor.getInt(cursor.getColumnIndex(AccountEntry._ID)) == accountId) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

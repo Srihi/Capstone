@@ -16,7 +16,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 import com.sanath.moneytracker.R;
@@ -25,7 +24,6 @@ import com.sanath.moneytracker.common.ItemClickListener;
 import com.sanath.moneytracker.data.DataContract.AccountEntry;
 import com.sanath.moneytracker.data.DataContract.AccountTypes;
 import com.sanath.moneytracker.ui.activities.AddAccountActivity;
-import com.sanath.moneytracker.ui.activities.AddCategoryActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

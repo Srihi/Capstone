@@ -4,6 +4,7 @@ package com.sanath.moneytracker.ui.fragments;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,8 +27,8 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.adapters.TransactionAdapter;
-import com.sanath.moneytracker.data.DataContract.AccountEntry;
-import com.sanath.moneytracker.data.DataContract.JournalEntry;
+import com.sanath.moneytracker.common.ItemClickListener;
+import com.sanath.moneytracker.common.Utils;
 import com.sanath.moneytracker.data.DataContract.PostingEntry;
 import com.sanath.moneytracker.data.DataContract.TransactionEntry;
 import com.sanath.moneytracker.data.DataContract.TransactionTypes;
@@ -35,7 +36,6 @@ import com.sanath.moneytracker.ui.activities.AddTransactionActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -47,7 +47,7 @@ import static com.sanath.moneytracker.ui.fragments.FilterFragmentDialog.*;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TransactionsFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>, FilterDismissListener, FilterSelectedListener {
+public class TransactionsFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>, FilterDismissListener, FilterSelectedListener, ItemClickListener<Uri> {
     private static final String TAG = TransactionsFragment.class.getSimpleName();
 
     private static final int REQUEST_CODE_ADD_INCOME = 0x000001;
@@ -118,7 +118,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
         imageButtonLeft.setOnClickListener(this);
         imageButtonRight.setOnClickListener(this);
 
-        transactionAdapter = new TransactionAdapter(getActivity(), null);
+        transactionAdapter = new TransactionAdapter(getActivity(), null, this);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
@@ -234,21 +234,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), TransactionEntry.CONTENT_URI, new String[]{
-                PostingEntry.TABLE_NAME + "." + PostingEntry._ID,
-                PostingEntry.TABLE_NAME + "." + PostingEntry.COLUMN_ACCOUNT_ID,
-                PostingEntry.TABLE_NAME + "." + PostingEntry.COLUMN_JOURNAL_ID,
-                PostingEntry.TABLE_NAME + "." + PostingEntry.COLUMN_AMOUNT,
-                PostingEntry.TABLE_NAME + "." + PostingEntry.COLUMN_CREDIT_DEBIT,
-                PostingEntry.TABLE_NAME + "." + PostingEntry.COLUMN_DATE_TIME,
-                JournalEntry.TABLE_NAME + "." + JournalEntry.COLUMN_DESCRIPTION,
-                JournalEntry.TABLE_NAME + "." + JournalEntry.COLUMN_PERIOD,
-                JournalEntry.TABLE_NAME + "." + JournalEntry.COLUMN_TYPE + " as " + TransactionEntry.TRANSACTION_TYPE,
-                AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_NAME,
-                AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " as " + AccountEntry.ACCOUNT_TYPE,
-                AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_COLOR,
-                AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_ICON,
-        },
+        return new CursorLoader(getActivity(), TransactionEntry.CONTENT_URI, Utils.getProjectionForTransaction(),
                 getSelection(),
                 new String[]{getPeriod()},
                 PostingEntry.TABLE_NAME + "." + PostingEntry.COLUMN_DATE_TIME + " DESC");
@@ -301,5 +287,10 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
         selectedTransactionsType = transactionTypes;
         getLoaderManager().restartLoader(TRANSACTION_LOADER, null, this);
         onDismiss();
+    }
+
+    @Override
+    public void onItemClick(Uri uri) {
+        startActivity(new Intent(Intent.ACTION_EDIT, uri, getActivity(), AddTransactionActivity.class));
     }
 }

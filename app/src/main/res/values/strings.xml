@@ -69,4 +69,7 @@
     <string name="amount">Amount</string>
     <string name="date">Date</string>
     <string name="description">Description</string>
+    <string name="activity_title_edit_income">Edit Income</string>
+    <string name="activity_title_edit_expense">Edit Expense</string>
+    <string name="activity_title_edit_transfer">Edit Transfer</string>
 </resources>

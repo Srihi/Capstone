@@ -132,6 +132,7 @@ public class DataContract {
         public static final String COLUMN_CREDIT_DEBIT = "credit_debit";
         public static final String COLUMN_DATE_TIME = "datetime";
         public static final String TRANSACTION_TYPE = "transaction_type";
+        public static final String POSTING_ID = "posting_id";
 
 
         public static Uri buildAccountUri(long id) {
