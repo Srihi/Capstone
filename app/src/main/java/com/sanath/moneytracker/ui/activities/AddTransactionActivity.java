@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -82,6 +84,8 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     EditText editTextDescription;
     @BindView(R.id.adView)
     AdView adView;
+    @BindView(R.id.activity_add_transaction)
+    ConstraintLayout root;
 
     private Unbinder unbinder;
 
@@ -99,7 +103,7 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
 
     private FirebaseAnalytics analytics;
 
-    private double amount = 0.0;
+    private double amountBefore = 0.0;
 
     private boolean isAccountDataLoaded = false;
 
@@ -125,9 +129,9 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         } else {
             transactionType = getIntent().getIntExtra(KEY_TRANSACTION_TYPE, TransactionTypes.INCOME);
             isEdit = getIntent().getBooleanExtra(KEY_IS_EDIT, false);
-            initLoaders();
         }
 
+        initLoaders();
         setActivityTitle();
         setLabels();
         loadAdMobBannerAd();
@@ -140,8 +144,8 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             editTextDescription.setText(cursor.getString(cursor.getColumnIndex(JournalEntry.COLUMN_DESCRIPTION)));
             transactionDate = new Date(cursor.getLong(cursor.getColumnIndex(JournalEntry.COLUMN_DATE_TIME)));
             setFormattedDate(transactionDate);
-            initLoaders();
             cursor.close();
+            loadAccountData(uri);
         }
     }
 
@@ -152,29 +156,19 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
                 new String[]{uri.getLastPathSegment()},
                 TransactionEntry.COLUMN_CREDIT_DEBIT + " ASC");
         if (cursorSourceTransaction != null && cursorSourceTransaction.moveToFirst()) {
-            amount = Math.abs(cursorSourceTransaction.getDouble(cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_AMOUNT)));
-            editTextAmount.setText(String.valueOf(amount));
+            amountBefore = Math.abs(cursorSourceTransaction.getDouble(cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_AMOUNT)));
+            editTextAmount.setText(String.valueOf(amountBefore));
             selectedSourceAccount = cursorSourceTransaction.getInt(
                     cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_ACCOUNT_ID));
             postingSourceId = cursorSourceTransaction.getInt(cursorSourceTransaction.getColumnIndex(TransactionEntry.POSTING_ID));
-            if (selectedSourceAccount != -1) {
-                spinnerSourceAccount.setSelection(
-                        sourceAccountAdapter.getSelectedAccountPosition(selectedSourceAccount));
-            }
 
             if (cursorSourceTransaction.moveToNext()) {
                 selectedDestinationAccount = cursorSourceTransaction.getInt(
                         cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_ACCOUNT_ID));
                 postingDestinationId = cursorSourceTransaction.getInt(cursorSourceTransaction.getColumnIndex(TransactionEntry.POSTING_ID));
-
-                if (selectedDestinationAccount != -1) {
-                    spinnerDestinationAccount.setSelection(
-                            destinationAccountAdapter.getSelectedAccountPosition(selectedDestinationAccount));
-                }
             }
             cursorSourceTransaction.close();
         }
-        isAccountDataLoaded = true;
     }
 
     private void loadAdMobBannerAd() {
@@ -223,12 +217,37 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         editTextDate.setText(sdf.format(date));
     }
 
-    private void saveTransaction() {
+    private boolean saveTransaction() {
         //save transactions here
-        double amount = Double.parseDouble(editTextAmount.getText().toString());
+        double amount = 0;
         long transactionDateTime = transactionDate.getTime();
         int sourceAccountId = getSelectedAccountId(((Cursor) spinnerSourceAccount.getSelectedItem()));
         int destinationAccountId = getSelectedAccountId(((Cursor) spinnerDestinationAccount.getSelectedItem()));
+
+        try {
+            amount = Double.parseDouble(editTextAmount.getText().toString());
+        } catch (NumberFormatException e) {
+            showValidationMessage(R.string.amount_not_valid);
+            return false;
+        }
+
+        //validation
+        if (amount <= 0) {
+            showValidationMessage(R.string.amount_not_valid);
+            return false;
+        }
+
+        //check account has enough money
+        double accountBalance = Utils.getBalance(this, sourceAccountId);
+        double balance = amount - amountBefore;
+        if (balance > 0) {
+            if (accountBalance < balance) {
+                //cant pay
+                showValidationMessage(R.string.validation_no_enough_balance);
+                return false;
+            }
+        }
+
 
         ContentValues journalValues = getJournalContentValues(transactionDateTime);
 
@@ -275,9 +294,25 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
 
         try {
             getContentResolver().applyBatch(DataContract.CONTENT_AUTHORITY, operations);
+            return true;
         } catch (RemoteException | OperationApplicationException e) {
             Log.e(TAG, e.getMessage(), e);
+            return false;
         }
+    }
+
+    private void showValidationMessage(int validationMessage) {
+        Snackbar.make(root, validationMessage, Snackbar.LENGTH_SHORT).addCallback(new Snackbar.Callback() {
+            @Override
+            public void onShown(Snackbar sb) {
+                super.onShown(sb);
+            }
+
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+            }
+        }).show();
     }
 
     @NonNull
@@ -378,8 +413,9 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_done) {
-            saveTransaction();
-            finish();
+            if (saveTransaction()) {
+                finish();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -457,7 +493,17 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             DatabaseUtils.dumpCursor(data);
         }
         if (isEdit && !isAccountDataLoaded) {
-            loadAccountData(getIntent().getData());
+            //loadAccountData(getIntent().getData());
+            if (selectedSourceAccount != -1) {
+                spinnerSourceAccount.setSelection(
+                        sourceAccountAdapter.getSelectedAccountPosition(selectedSourceAccount));
+            }
+
+            if (selectedDestinationAccount != -1) {
+                spinnerDestinationAccount.setSelection(
+                        destinationAccountAdapter.getSelectedAccountPosition(selectedDestinationAccount));
+            }
+
         }
     }
 

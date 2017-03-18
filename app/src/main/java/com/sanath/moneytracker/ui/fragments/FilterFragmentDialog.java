@@ -9,7 +9,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.sanath.moneytracker.R;
 import com.sanath.moneytracker.data.DataContract;
@@ -25,17 +25,17 @@ import butterknife.Unbinder;
 
 public class FilterFragmentDialog extends BottomSheetDialogFragment implements View.OnClickListener {
 
-    private static final java.lang.String KEY_SELECTED_FILTER = "key_selected_filter";
+    public static final java.lang.String KEY_SELECTED_FILTER = "key_selected_filter";
     private Unbinder unbinder;
 
     @BindView(R.id.imageButtonAll)
-    ImageButton imageButtonAll;
+    ImageView imageButtonAll;
     @BindView(R.id.imageButtonIncome)
-    ImageButton imageButtonIncome;
+    ImageView imageButtonIncome;
     @BindView(R.id.imageButtonExpenses)
-    ImageButton imageButtonExpenses;
+    ImageView imageButtonExpenses;
     @BindView(R.id.imageButtonTransfer)
-    ImageButton imageButtonTransfer;
+    ImageView imageButtonTransfer;
 
     private FilterDismissListener dismissListener;
     private FilterSelectedListener filterSelectedListener;
@@ -66,6 +66,28 @@ public class FilterFragmentDialog extends BottomSheetDialogFragment implements V
         imageButtonIncome.setOnClickListener(this);
         imageButtonExpenses.setOnClickListener(this);
         imageButtonTransfer.setOnClickListener(this);
+
+        setSelectedFilter();
+    }
+
+    private void setSelectedFilter() {
+        switch (selectedFilterType) {
+            case TransactionTypes.ALL:
+                toggleButtons(imageButtonAll);
+                break;
+            case TransactionTypes.INCOME:
+                toggleButtons(imageButtonIncome);
+                break;
+            case TransactionTypes.EXPENSES:
+                toggleButtons(imageButtonExpenses);
+                break;
+            case TransactionTypes.TRANSFER:
+                toggleButtons(imageButtonTransfer);
+                break;
+            default:
+                toggleButtons(imageButtonAll);
+                break;
+        }
     }
 
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
@@ -96,22 +118,33 @@ public class FilterFragmentDialog extends BottomSheetDialogFragment implements V
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imageButtonAll:
-                filter(TransactionTypes.ALL);
+                selectedFilterType = TransactionTypes.ALL;
                 break;
             case R.id.imageButtonIncome:
-                filter(TransactionTypes.INCOME);
+                selectedFilterType = TransactionTypes.INCOME;
                 break;
             case R.id.imageButtonExpenses:
-                filter(TransactionTypes.EXPENSES);
+                selectedFilterType = TransactionTypes.EXPENSES;
                 break;
             case R.id.imageButtonTransfer:
-                filter(TransactionTypes.TRANSFER);
+                selectedFilterType = TransactionTypes.TRANSFER;
                 break;
             default:
-                filter(TransactionTypes.ALL);
-
+                selectedFilterType = TransactionTypes.ALL;
         }
+        filter(selectedFilterType);
+        toggleButtons(v);
+    }
 
+    private void toggleButtons(View v) {
+        ImageView[] imageButtons = new ImageView[]{imageButtonTransfer, imageButtonExpenses, imageButtonIncome, imageButtonAll};
+        for (ImageView imageButton : imageButtons) {
+            if (imageButton.getId() == v.getId()) {
+                imageButton.setBackgroundResource(R.drawable.selected_filter_circle_background);
+            } else {
+                imageButton.setBackgroundResource(R.drawable.gray_circle_background);
+            }
+        }
     }
 
     private void filter(int transactionTypes) {

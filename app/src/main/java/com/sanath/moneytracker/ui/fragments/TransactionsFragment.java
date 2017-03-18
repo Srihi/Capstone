@@ -56,6 +56,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
             "or (account.type == 2 and journal.type == 3 and posting.credit_debit == 1) " +
             "or (account.type == 0 and journal.type == 1 and posting.credit_debit == 1)) " +
             "and period == ?)";
+    private static final String KEY_SELECTED_TRANSACTION_TYPE = "key_selected_transaction_type";
 
     public static TransactionsFragment fragment;
     private Unbinder unbinder;
@@ -103,6 +104,15 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        if (savedInstanceState != null) {
+            selectedTransactionsType = savedInstanceState.getInt(KEY_SELECTED_TRANSACTION_TYPE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(KEY_SELECTED_TRANSACTION_TYPE, selectedTransactionsType);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -123,10 +133,29 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
                 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(transactionAdapter);
+        recyclerView.addOnScrollListener(onScrollListener);
         setMonthNavTitle();
         floatingActionMenu.setClosedOnTouchOutside(true);
         return view;
     }
+
+    private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (dy > 0 || dy < 0 && floatingActionMenu.isShown()) {
+                floatingActionMenu.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                floatingActionMenu.setVisibility(View.VISIBLE);
+            }
+
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+    };
 
     @Override
     public void onDestroyView() {
@@ -193,6 +222,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
                 filterDialog = new FilterFragmentDialog();
             }
             Bundle bundle = new Bundle();
+            bundle.putInt(FilterFragmentDialog.KEY_SELECTED_FILTER, selectedTransactionsType);
             filterDialog.setArguments(bundle);
             filterDialog.setFilterDismissListener(this);
             filterDialog.setFilterSelectedListener(this);

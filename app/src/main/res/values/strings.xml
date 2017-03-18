@@ -72,4 +72,7 @@
     <string name="activity_title_edit_income">Edit Income</string>
     <string name="activity_title_edit_expense">Edit Expense</string>
     <string name="activity_title_edit_transfer">Edit Transfer</string>
+    <string name="amount_not_valid">Please Add valid amount</string>
+    <string name="validation_no_enough_balance">No enough balance in account</string>
+    <string name="action_filter">Filter</string>
 </resources>
