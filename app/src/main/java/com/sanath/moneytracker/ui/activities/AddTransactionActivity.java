@@ -110,7 +110,6 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     private int postingSourceId = -1;
     private int postingDestinationId = -1;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -248,7 +247,6 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             }
         }
 
-
         ContentValues journalValues = getJournalContentValues(transactionDateTime);
 
         ContentValues postingValuesSource =
@@ -378,7 +376,6 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         if (transactionType == TransactionTypes.TRANSFER) {
             textViewSourceAccount.setText(R.string.account);
             textViewDestinationAccount.setText(R.string.account);
-            //imageViewDownArrow.setVisibility(View.VISIBLE);
         } else if (transactionType == TransactionTypes.INCOME) {
             textViewSourceAccount.setText(R.string.source);
             textViewDestinationAccount.setText(R.string.account);
@@ -420,7 +417,6 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     private void setActivityTitle() {
         int id = R.string.activity_title_add_income;
@@ -474,7 +470,6 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
                 null);
     }
 
-
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader.getId() == DESTINATION_ACCOUNT_LOADER) {
@@ -483,17 +478,14 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
             } else {
                 destinationAccountAdapter.swapCursor(data);
             }
-            DatabaseUtils.dumpCursor(data);
         } else {
             if (transactionType == TransactionTypes.INCOME) {
                 destinationAccountAdapter.swapCursor(data);
             } else {
                 sourceAccountAdapter.swapCursor(data);
             }
-            DatabaseUtils.dumpCursor(data);
         }
         if (isEdit && !isAccountDataLoaded) {
-            //loadAccountData(getIntent().getData());
             if (selectedSourceAccount != -1) {
                 spinnerSourceAccount.setSelection(
                         sourceAccountAdapter.getSelectedAccountPosition(selectedSourceAccount));
