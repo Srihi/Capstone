@@ -75,4 +75,8 @@
     <string name="amount_not_valid">Please Add valid amount</string>
     <string name="validation_no_enough_balance">No enough balance in account</string>
     <string name="action_filter">Filter</string>
+    <string name="account_summery">Account Summery</string>
+    <string name="expense_summery">Expense Summery</string>
+    <string name="balance">Balance</string>
+    <string name="total">Total</string>
 </resources>
