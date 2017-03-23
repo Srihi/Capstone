@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
@@ -214,8 +215,34 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        } else if (id == R.id.action_delete) {
+            showDeleteCategoryConfirmMessage();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showDeleteCategoryConfirmMessage() {
+        new MaterialDialog.Builder(this).title(R.string.dialog_title_delete_category)
+                .content(R.string.dialog_body_delete_category)
+                .positiveText(R.string.dialog_positive_delete)
+                .negativeText(R.string.dialog_negative_cancel)
+                .onAny(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (which == DialogAction.POSITIVE) {
+                            dialog.dismiss();
+                            deleteCategory();
+                        } else {
+                            dialog.dismiss();
+                        }
+                    }
+                }).show();
+    }
+
+    private void deleteCategory() {
+        if (getContentResolver().delete(getIntent().getData(), null, null) > 0) {
+            finish();
+        }
     }
 
     private void updateAccount() {

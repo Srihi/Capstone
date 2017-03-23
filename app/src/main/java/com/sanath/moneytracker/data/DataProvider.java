@@ -30,9 +30,7 @@ public class DataProvider extends ContentProvider {
     private static final int POSTINGS = 500;
     private static final int POSTING = 501;
 
-
     private static final int TRANSACTIONS = 600;
-
 
     private DataHelper dataHelper;
 
@@ -58,74 +56,9 @@ public class DataProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        final SQLiteDatabase database = dataHelper.getWritableDatabase();
-        int match = uriMatcher.match(uri);
-        int rows;
-        switch (match) {
-            case ACCOUNT: {
-                String id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    rows = database.delete(AccountEntry.TABLE_NAME,
-                            AccountEntry._ID + "=" + id,
-                            null);
-                } else {
-                    rows = database.delete(AccountEntry.TABLE_NAME,
-                            AccountEntry._ID + "=" + id
-                                    + " and "
-                                    + selection,
-                            selectionArgs);
-                }
-            }
-            break;
-            case ACCOUNTS: {
-                rows = database.delete(AccountEntry.TABLE_NAME, selection, selectionArgs);
-            }
-            break;
-            case POSTING: {
-                String id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    rows = database.delete(PostingEntry.TABLE_NAME,
-                            PostingEntry._ID + "=" + id,
-                            null);
-                } else {
-                    rows = database.delete(PostingEntry.TABLE_NAME,
-                            PostingEntry._ID + "=" + id
-                                    + " and "
-                                    + selection,
-                            selectionArgs);
-                }
-            }
-            break;
-            case POSTINGS: {
-                rows = database.delete(PostingEntry.TABLE_NAME, selection, selectionArgs);
-            }
-            break;
-            case JOURNAL: {
-                String id = uri.getLastPathSegment();
-                if (TextUtils.isEmpty(selection)) {
-                    rows = database.delete(JournalEntry.TABLE_NAME,
-                            JournalEntry._ID + "=" + id,
-                            null);
-                } else {
-                    rows = database.delete(JournalEntry.TABLE_NAME,
-                            JournalEntry._ID + "=" + id
-                                    + " and "
-                                    + selection,
-                            selectionArgs);
-                }
-            }
-            break;
-            case JOURNALS: {
-                rows = database.delete(AccountEntry.TABLE_NAME, selection, selectionArgs);
-            }
-            break;
-            default:
-                throw new UnsupportedOperationException("Unknown uri" + uri);
-        }
-        getContext().getContentResolver().notifyChange(uri, null);
-        getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
-        return rows;
+    public boolean onCreate() {
+        dataHelper = new DataHelper(getContext());
+        return true;
     }
 
     @Override
@@ -149,55 +82,6 @@ public class DataProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown Uri : " + uri);
         }
-    }
-
-    @Override
-    public Uri insert(Uri uri, ContentValues values) {
-        Log.d(TAG, "insert() called with: uri = [" + uri + "], values = [" + values + "]");
-        final SQLiteDatabase database = dataHelper.getWritableDatabase();
-        int match = uriMatcher.match(uri);
-        Uri returnUri;
-        switch (match) {
-            case ACCOUNTS: {
-                long id = database.insert(AccountEntry.TABLE_NAME, null, values);
-                if (id > 0) {
-                    returnUri = AccountEntry.buildAccountUri(id);
-                } else {
-                    throw new SQLException("Failed to insert new row into uri : " + uri);
-                }
-            }
-            break;
-            case JOURNALS: {
-                long id = database.insert(JournalEntry.TABLE_NAME, null, values);
-                if (id > 0) {
-                    returnUri = JournalEntry.buildAccountUri(id);
-                } else {
-                    throw new SQLException("Failed to insert new row into uri : " + uri);
-                }
-            }
-            break;
-            case POSTINGS: {
-                long id = database.insert(PostingEntry.TABLE_NAME, null, values);
-                if (id > 0) {
-                    returnUri = PostingEntry.buildAccountUri(id);
-                } else {
-                    throw new SQLException("Failed to insert new row into uri : " + uri);
-                }
-            }
-            break;
-            default:
-                throw new UnsupportedOperationException("Unknown uri" + uri);
-        }
-        getContext().getContentResolver().notifyChange(uri, null);
-        getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
-        return returnUri;
-
-    }
-
-    @Override
-    public boolean onCreate() {
-        dataHelper = new DataHelper(getContext());
-        return true;
     }
 
     @Override
@@ -250,6 +134,49 @@ public class DataProvider extends ContentProvider {
         }
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
+    }
+
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        Log.d(TAG, "insert() called with: uri = [" + uri + "], values = [" + values + "]");
+        final SQLiteDatabase database = dataHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        Uri returnUri;
+        switch (match) {
+            case ACCOUNTS: {
+                long id = database.insert(AccountEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    returnUri = AccountEntry.buildAccountUri(id);
+                } else {
+                    throw new SQLException("Failed to insert new row into uri : " + uri);
+                }
+            }
+            break;
+            case JOURNALS: {
+                long id = database.insert(JournalEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    returnUri = JournalEntry.buildAccountUri(id);
+                } else {
+                    throw new SQLException("Failed to insert new row into uri : " + uri);
+                }
+            }
+            break;
+            case POSTINGS: {
+                long id = database.insert(PostingEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    returnUri = PostingEntry.buildAccountUri(id);
+                } else {
+                    throw new SQLException("Failed to insert new row into uri : " + uri);
+                }
+            }
+            break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri" + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
+        return returnUri;
+
     }
 
     @Override
@@ -320,6 +247,77 @@ public class DataProvider extends ContentProvider {
             break;
             case JOURNALS: {
                 rows = database.update(PostingEntry.TABLE_NAME, values, selection, selectionArgs);
+            }
+            break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri" + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
+        return rows;
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        final SQLiteDatabase database = dataHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        int rows;
+        switch (match) {
+            case ACCOUNT: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.delete(AccountEntry.TABLE_NAME,
+                            AccountEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.delete(AccountEntry.TABLE_NAME,
+                            AccountEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case ACCOUNTS: {
+                rows = database.delete(AccountEntry.TABLE_NAME, selection, selectionArgs);
+            }
+            break;
+            case POSTING: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.delete(PostingEntry.TABLE_NAME,
+                            PostingEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.delete(PostingEntry.TABLE_NAME,
+                            PostingEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case POSTINGS: {
+                rows = database.delete(PostingEntry.TABLE_NAME, selection, selectionArgs);
+            }
+            break;
+            case JOURNAL: {
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rows = database.delete(JournalEntry.TABLE_NAME,
+                            JournalEntry._ID + "=" + id,
+                            null);
+                } else {
+                    rows = database.delete(JournalEntry.TABLE_NAME,
+                            JournalEntry._ID + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                }
+            }
+            break;
+            case JOURNALS: {
+                rows = database.delete(AccountEntry.TABLE_NAME, selection, selectionArgs);
             }
             break;
             default:

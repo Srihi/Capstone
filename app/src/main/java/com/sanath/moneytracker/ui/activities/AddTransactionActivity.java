@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -24,10 +23,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -74,8 +74,6 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     TextView textViewSourceAccount;
     @BindView(R.id.textViewDestinationAccount)
     TextView textViewDestinationAccount;
-    @BindView(R.id.imageViewDownArrow)
-    ImageView imageViewDownArrow;
     @BindView(R.id.editTextAmount)
     EditText editTextAmount;
     @BindView(R.id.editTextDate)
@@ -149,24 +147,24 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     }
 
     private void loadAccountData(Uri uri) {
-        Cursor cursorSourceTransaction = getContentResolver().query(TransactionEntry.CONTENT_URI,
+        Cursor cursorTransaction = getContentResolver().query(TransactionEntry.CONTENT_URI,
                 Utils.getProjectionForTransaction(),
                 JournalEntry.TABLE_NAME + "." + JournalEntry._ID + "=?",
                 new String[]{uri.getLastPathSegment()},
                 TransactionEntry.COLUMN_CREDIT_DEBIT + " ASC");
-        if (cursorSourceTransaction != null && cursorSourceTransaction.moveToFirst()) {
-            amountBefore = Math.abs(cursorSourceTransaction.getDouble(cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_AMOUNT)));
+        if (cursorTransaction != null && cursorTransaction.moveToFirst()) {
+            amountBefore = Math.abs(cursorTransaction.getDouble(cursorTransaction.getColumnIndex(TransactionEntry.COLUMN_AMOUNT)));
             editTextAmount.setText(String.valueOf(amountBefore));
-            selectedSourceAccount = cursorSourceTransaction.getInt(
-                    cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_ACCOUNT_ID));
-            postingSourceId = cursorSourceTransaction.getInt(cursorSourceTransaction.getColumnIndex(TransactionEntry.POSTING_ID));
+            selectedSourceAccount = cursorTransaction.getInt(
+                    cursorTransaction.getColumnIndex(TransactionEntry.COLUMN_ACCOUNT_ID));
+            postingSourceId = cursorTransaction.getInt(cursorTransaction.getColumnIndex(TransactionEntry.POSTING_ID));
 
-            if (cursorSourceTransaction.moveToNext()) {
-                selectedDestinationAccount = cursorSourceTransaction.getInt(
-                        cursorSourceTransaction.getColumnIndex(TransactionEntry.COLUMN_ACCOUNT_ID));
-                postingDestinationId = cursorSourceTransaction.getInt(cursorSourceTransaction.getColumnIndex(TransactionEntry.POSTING_ID));
+            if (cursorTransaction.moveToNext()) {
+                selectedDestinationAccount = cursorTransaction.getInt(
+                        cursorTransaction.getColumnIndex(TransactionEntry.COLUMN_ACCOUNT_ID));
+                postingDestinationId = cursorTransaction.getInt(cursorTransaction.getColumnIndex(TransactionEntry.POSTING_ID));
             }
-            cursorSourceTransaction.close();
+            cursorTransaction.close();
         }
     }
 
@@ -240,7 +238,7 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
         double accountBalance = Utils.getBalance(this, sourceAccountId);
         double balance = amount - amountBefore;
         if (balance > 0) {
-            if (accountBalance < balance) {
+            if (accountBalance < balance && transactionType != TransactionTypes.INCOME) {
                 //cant pay
                 showValidationMessage(R.string.validation_no_enough_balance);
                 return false;
@@ -414,8 +412,34 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
                 finish();
             }
             return true;
+        } else if (id == R.id.action_delete) {
+            deleteTransactionConfirmMessage();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteTransactionConfirmMessage() {
+        new MaterialDialog.Builder(this).title(R.string.dialog_title_delete_transaction)
+                .content(R.string.dialog_body_delete_transaction)
+                .positiveText(R.string.dialog_positive_delete)
+                .negativeText(R.string.dialog_negative_cancel)
+                .onAny(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (which == DialogAction.POSITIVE) {
+                            dialog.dismiss();
+                            deleteTransaction();
+                        } else {
+                            dialog.dismiss();
+                        }
+                    }
+                }).show();
+    }
+
+    private void deleteTransaction() {
+        if (getContentResolver().delete(getIntent().getData(), null, null) > 0) {
+            finish();
+        }
     }
 
     private void setActivityTitle() {

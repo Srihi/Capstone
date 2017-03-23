@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.afollestad.materialdialogs.simplelist.MaterialSimpleListAdapter;
@@ -226,8 +227,34 @@ public class AddAccountActivity extends AppCompatActivity implements ColorChoose
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage(), e);
             }
+        } else if (id == R.id.action_delete) {
+            showDeleteAccountConfirmMessage();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showDeleteAccountConfirmMessage() {
+        new MaterialDialog.Builder(this).title(R.string.dialog_title_delete_account)
+                .content(R.string.dialog_body_delete_account)
+                .positiveText(R.string.dialog_positive_delete)
+                .negativeText(R.string.dialog_negative_cancel)
+                .onAny(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (which == DialogAction.POSITIVE) {
+                            dialog.dismiss();
+                            deleteAccount();
+                        } else {
+                            dialog.dismiss();
+                        }
+                    }
+                }).show();
+    }
+
+    private void deleteAccount() {
+        if (getContentResolver().delete(getIntent().getData(), null, null) > 0) {
+            finish();
+        }
     }
 
     private void updateAccount() {
