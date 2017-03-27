@@ -85,4 +85,6 @@
     <string name="expense_summery">Expense Summary</string>
     <string name="balance">Balance</string>
     <string name="total">Total</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>
