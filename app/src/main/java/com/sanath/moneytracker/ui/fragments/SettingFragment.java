@@ -70,6 +70,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
                         expenseAccountEntryValues.add(String.valueOf(cursor.getInt(0)));
                         expenseAccountEntries.add(cursor.getString(1));
                     } while (cursor.moveToNext());
+                    cursor.close();
                 }
 
                 return null;

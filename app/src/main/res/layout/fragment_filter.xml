@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layoutDirection="@integer/layout_direction"
-    android:paddingBottom="8dp">
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             android:layoutDirection="@integer/layout_direction"
+                                             android:paddingBottom="8dp">
 
     <TextView
         android:id="@+id/textView"
@@ -15,7 +14,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/filter"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
         android:id="@+id/imageButtonAll"
@@ -29,14 +28,16 @@
         android:clickable="false"
         android:padding="8dp"
         android:scaleType="fitXY"
+        android:contentDescription="@string/cd_filter_all"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/imageButtonIncome"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/ic_all" />
+        app:srcCompat="@drawable/ic_all"/>
 
     <ImageView
         android:id="@+id/imageButtonIncome"
         android:layout_width="48dp"
+        android:contentDescription="@string/cd_filter_income"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -49,7 +50,7 @@
         app:layout_constraintLeft_toRightOf="@+id/imageButtonAll"
         app:layout_constraintRight_toLeftOf="@+id/imageButtonExpenses"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/ic_income" />
+        app:srcCompat="@drawable/ic_income"/>
 
     <ImageView
         android:id="@+id/imageButtonExpenses"
@@ -57,6 +58,7 @@
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:contentDescription="@string/cd_filter_expense"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/gray_circle_background"
@@ -66,7 +68,7 @@
         app:layout_constraintLeft_toRightOf="@+id/imageButtonIncome"
         app:layout_constraintRight_toLeftOf="@+id/imageButtonTransfer"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/ic_expense" />
+        app:srcCompat="@drawable/ic_expense"/>
 
     <ImageView
         android:id="@+id/imageButtonTransfer"
@@ -76,6 +78,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:contentDescription="@string/cd_filter_transfer"
         android:background="@drawable/gray_circle_background"
         android:clickable="false"
         android:padding="8dp"
@@ -83,7 +86,7 @@
         app:layout_constraintLeft_toRightOf="@+id/imageButtonExpenses"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/ic_transfer" />
+        app:srcCompat="@drawable/ic_transfer"/>
 
     <TextView
         android:id="@+id/textViewActionAll"
@@ -93,7 +96,7 @@
         android:text="@string/all"
         app:layout_constraintLeft_toLeftOf="@+id/imageButtonAll"
         app:layout_constraintRight_toRightOf="@+id/imageButtonAll"
-        app:layout_constraintTop_toBottomOf="@+id/imageButtonAll" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonAll"/>
 
     <TextView
         android:id="@+id/textView3"
@@ -103,7 +106,7 @@
         android:text="@string/income"
         app:layout_constraintLeft_toLeftOf="@+id/imageButtonIncome"
         app:layout_constraintRight_toRightOf="@+id/imageButtonIncome"
-        app:layout_constraintTop_toBottomOf="@+id/imageButtonIncome" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonIncome"/>
 
     <TextView
         android:id="@+id/textView4"
@@ -113,7 +116,7 @@
         android:text="@string/expenses"
         app:layout_constraintLeft_toLeftOf="@+id/imageButtonExpenses"
         app:layout_constraintRight_toRightOf="@+id/imageButtonExpenses"
-        app:layout_constraintTop_toBottomOf="@+id/imageButtonExpenses" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonExpenses"/>
 
     <TextView
         android:id="@+id/textView5"
@@ -123,5 +126,5 @@
         android:text="@string/transfer"
         app:layout_constraintLeft_toLeftOf="@+id/imageButtonTransfer"
         app:layout_constraintRight_toRightOf="@+id/imageButtonTransfer"
-        app:layout_constraintTop_toBottomOf="@+id/imageButtonTransfer" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonTransfer"/>
 </android.support.constraint.ConstraintLayout>

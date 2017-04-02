@@ -77,13 +77,16 @@ public class TransactionAdapter extends CursorRecyclerAdapter<TransactionsVH> {
                 cursor.getString(cursor.getColumnIndex(JournalEntry.COLUMN_DESCRIPTION)));
 
 
-        holder.textViewTransactionDetails.setText(String.valueOf(
-                cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME))));
+        String name = String.valueOf(
+                cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME)));
+        holder.textViewTransactionDetails.setText(name);
 
         int icon = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_ICON));
         int selectedColor = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_COLOR));
         MaterialDrawableBuilder builder = Utils.getMaterialDrawableBuilder(context, icon, Color.WHITE);
         holder.imageViewTransactionIcon.setImageDrawable(builder.build());
+        holder.imageViewTransactionIcon.setContentDescription(String.format(context.getString(R.string
+                .cd_transaction_icon),name));
         Drawable background = holder.imageViewTransactionIcon.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
 

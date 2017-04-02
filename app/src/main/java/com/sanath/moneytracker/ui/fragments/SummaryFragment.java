@@ -35,8 +35,6 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
     private static final int ACCOUNT_SUMMARY_LOADER = 0x000002;
     private static final int EXPENSES_SUMMARY_LOADER = 0x000003;
 
-
-    public static SummaryFragment fragment;
     private Unbinder unbinder;
 
     @BindView(R.id.recyclerViewAccountSummary)
@@ -56,8 +54,7 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
 
 
     public static SummaryFragment newInstance() {
-        fragment = new SummaryFragment();
-        return fragment;
+        return new SummaryFragment();
     }
 
 

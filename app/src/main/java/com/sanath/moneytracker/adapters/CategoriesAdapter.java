@@ -39,11 +39,14 @@ public class CategoriesAdapter extends CursorRecyclerAdapter<CategoriesVH> {
 
     @Override
     public void onBindViewHolder(CategoriesVH holder, final Cursor cursor) {
-        holder.textViewCategoryName.setText(cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME)));
+        String name = cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME));
+        holder.textViewCategoryName.setText(name);
         int icon = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_ICON));
         int selectedColor = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_COLOR));
         MaterialDrawableBuilder builder = Utils.getMaterialDrawableBuilder(context, icon, Color.WHITE);
         holder.imageViewCategoryIcon.setImageDrawable(builder.build());
+        holder.imageViewCategoryIcon.setContentDescription(String.format(context.getString(R.string
+                .cd_category_icon),name));
         Drawable background = holder.imageViewCategoryIcon.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
     }

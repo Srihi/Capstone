@@ -76,6 +76,7 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
                 selectedColor = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_COLOR));
                 selectedIcon = IconValue.values()[cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_ICON))];
                 accountType = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_TYPE));
+                cursor.close();
             }
             isEdit = true;
         } else {

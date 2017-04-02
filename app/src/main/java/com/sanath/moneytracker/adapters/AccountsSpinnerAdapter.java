@@ -25,8 +25,11 @@ import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 public class AccountsSpinnerAdapter extends CursorAdapter implements SpinnerAdapter {
 
+    private final Context context;
+
     public AccountsSpinnerAdapter(Context context, Cursor c, boolean autoRequery) {
         super(context, c, autoRequery);
+        this.context = context;
     }
 
     @Override
@@ -37,13 +40,16 @@ public class AccountsSpinnerAdapter extends CursorAdapter implements SpinnerAdap
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ((TextView) view.findViewById(R.id.textViewName)).setText(cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME)));
+        String name = cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME));
+        ((TextView) view.findViewById(R.id.textViewName)).setText(name);
         int icon = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_ICON));
         int selectedColor = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_COLOR));
         MaterialDrawableBuilder builder = Utils.getMaterialDrawableBuilder(context, icon, Color.WHITE);
 
         ImageView imageView = (ImageView) view.findViewById(R.id.imageViewIcon);
         imageView.setImageDrawable(builder.build());
+        imageView.setContentDescription(String.format(context.getString(R.string
+                .cd_account_icon),name));
         Drawable background = imageView.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
     }

@@ -58,7 +58,6 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
             "and period == ?)";
     private static final String KEY_SELECTED_TRANSACTION_TYPE = "key_selected_transaction_type";
 
-    public static TransactionsFragment fragment;
     private Unbinder unbinder;
 
     @BindView(R.id.recyclerView)
@@ -92,8 +91,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
     private int selectedTransactionsType = TransactionTypes.ALL;
 
     public static TransactionsFragment newInstance() {
-        fragment = new TransactionsFragment();
-        return fragment;
+        return new TransactionsFragment();
     }
 
     public TransactionsFragment() {

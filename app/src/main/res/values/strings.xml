@@ -4,8 +4,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
-
     <string name="title_nav_transactions">Transactions</string>
     <string name="title_nav_summary">Summary</string>
     <string name="title_nav_accounts">Accounts</string>
@@ -85,10 +83,23 @@
     <string name="expense_summery">Expense Summary</string>
     <string name="balance">Balance</string>
     <string name="total">Total</string>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
     <string name="no_summary_yet">No Summary yet</string>
     <string name="pref_accounts_category_name">Accounts</string>
     <string name="pref_title_default_expense_account">Expense Account</string>
     <string name="pref_summary_default_expense_account">Select Default Expense Account</string>
+
+
+    <string name="cd_select_account_icon">select account icon</string>
+    <string name="cd_select_account_color">select account color</string>
+    <string name="cd_select_category_icon">select category icon</string>
+    <string name="cd_select_category_color">select category color</string>
+    <string name="cd_filter_all">filter all transaction</string>
+    <string name="cd_filter_income">filter income transaction</string>
+    <string name="cd_filter_expense">filter expense transaction</string>
+    <string name="cd_filter_transfer">filter transfer transaction</string>
+    <string name="cd_next_month">go to next month</string>
+    <string name="cd_last_month">go to last month</string>
+    <string name="cd_account_icon">%s account icon</string>
+    <string name="cd_category_icon">%s category icon</string>
+    <string name="cd_transaction_icon">%s transaction icon</string>
 </resources>

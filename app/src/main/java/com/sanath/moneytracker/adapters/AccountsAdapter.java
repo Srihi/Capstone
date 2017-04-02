@@ -35,11 +35,14 @@ public class AccountsAdapter extends CursorRecyclerAdapter<AccountsVH> {
 
     @Override
     public void onBindViewHolder(AccountsVH holder, Cursor cursor) {
-        holder.textViewAccountName.setText(cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME)));
+        String name = cursor.getString(cursor.getColumnIndex(AccountEntry.COLUMN_NAME));
+        holder.textViewAccountName.setText(name);
         int icon = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_ICON));
         int selectedColor = cursor.getInt(cursor.getColumnIndex(AccountEntry.COLUMN_COLOR));
         MaterialDrawableBuilder builder = Utils.getMaterialDrawableBuilder(context, icon, Color.WHITE);
         holder.imageViewAccountIcon.setImageDrawable(builder.build());
+        holder.imageViewAccountIcon.setContentDescription(String.format(context.getString(R.string
+                .cd_account_icon),name));
         Drawable background = holder.imageViewAccountIcon.getBackground();
         Utils.setBackgroundColor(background, selectedColor);
 
