@@ -240,20 +240,24 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
 
     private void addTransfer() {
         Intent intentIncome = new Intent(getActivity(), AddTransactionActivity.class);
+        //push from bottom to top
         intentIncome.putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE, TransactionTypes.TRANSFER);
         startActivityForResult(intentIncome, REQUEST_CODE_ADD_INCOME);
+        getActivity().overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
     }
 
     private void addExpense() {
         Intent intentIncome = new Intent(getActivity(), AddTransactionActivity.class);
         intentIncome.putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE, TransactionTypes.EXPENSES);
         startActivityForResult(intentIncome, REQUEST_CODE_ADD_INCOME);
+        getActivity().overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
     }
 
     private void addIncome() {
         Intent intentIncome = new Intent(getActivity(), AddTransactionActivity.class);
         intentIncome.putExtra(AddTransactionActivity.KEY_TRANSACTION_TYPE, TransactionTypes.INCOME);
         startActivityForResult(intentIncome, REQUEST_CODE_ADD_INCOME);
+        getActivity().overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
     }
 
     @Override
