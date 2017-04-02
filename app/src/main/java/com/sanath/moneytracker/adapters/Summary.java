@@ -28,4 +28,12 @@ public class Summary {
     public void setValue(double value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "Summary{" +
+                "title='" + title + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }

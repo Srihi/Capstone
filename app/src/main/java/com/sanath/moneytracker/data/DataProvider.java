@@ -2,6 +2,7 @@ package com.sanath.moneytracker.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -11,7 +12,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.sanath.moneytracker.common.Utils;
+import com.sanath.moneytracker.common.Constant;
 
 import static com.sanath.moneytracker.data.DataContract.*;
 
@@ -175,6 +176,7 @@ public class DataProvider extends ContentProvider {
         }
         getContext().getContentResolver().notifyChange(uri, null);
         getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
+        sendUpdate();
         return returnUri;
 
     }
@@ -254,6 +256,7 @@ public class DataProvider extends ContentProvider {
         }
         getContext().getContentResolver().notifyChange(uri, null);
         getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
+        sendUpdate();
         return rows;
     }
 
@@ -325,6 +328,11 @@ public class DataProvider extends ContentProvider {
         }
         getContext().getContentResolver().notifyChange(uri, null);
         getContext().getContentResolver().notifyChange(TransactionEntry.CONTENT_URI, null);
+        sendUpdate();
         return rows;
+    }
+
+    private void sendUpdate() {
+        getContext().sendBroadcast(new Intent(Constant.ACTION_UPDATE));
     }
 }

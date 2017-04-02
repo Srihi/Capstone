@@ -2,49 +2,50 @@ package com.sanath.moneytracker.ui.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.widget.RemoteViews;
 
 import com.sanath.moneytracker.R;
-import com.sanath.moneytracker.adapters.Summary;
-import com.sanath.moneytracker.adapters.SummaryAdapter;
-
-import java.util.ArrayList;
+import com.sanath.moneytracker.common.Constant;
 
 /**
  * Implementation of App Widget functionality.
  */
 public class AccountSummaryWidget extends AppWidgetProvider {
 
-    private static final int ACCOUNT_SUMMARY_LOADER = 0x000002;
-
-    private SummaryAdapter summaryAdapterAccounts;
-    private ArrayList<Summary> accountsSummaries = new ArrayList<>();
-
-
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
+        Intent intent = new Intent(context, AccountSummaryWidgetService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        CharSequence widgetText = context.getString(R.string.appwidget_text);
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.account_summary_widget);
-       // views.setTextViewText(R.id.appwidget_text, widgetText);
-
-        // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.account_summary_widget);
+        remoteViews.setRemoteAdapter(R.id.listViewAccounts, intent);
+        remoteViews.setEmptyView(R.id.listViewAccounts, R.id.empty_view);
+        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
+        String action = intent.getAction();
+
+        if (Constant.ACTION_UPDATE.equals(action)) {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
+                    new ComponentName(context, getClass()));
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.listViewAccounts);
+        }
         super.onReceive(context, intent);
     }
 
@@ -54,7 +55,6 @@ public class AccountSummaryWidget extends AppWidgetProvider {
 
     @Override
     public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
     }
 }
 

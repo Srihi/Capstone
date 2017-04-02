@@ -1,10 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layoutDirection="@integer/layout_direction"
-    android:padding="@dimen/widget_margin">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorWhite"
+                android:layoutDirection="@integer/layout_direction"
+                android:padding="@dimen/widget_margin">
 
     <TextView
         android:id="@+id/textViewWidgetHeader"
@@ -15,36 +15,50 @@
         android:layout_margin="8dp"
         android:text="@string/account_summery"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
-    <ListView
-        android:id="@+id/listViewAccounts"
+    <FrameLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/textViewBalance"
-        android:layout_below="@+id/textViewWidgetHeader"
-        android:layout_margin="8dp"
-        android:minHeight="100dp" />
+        android:layout_below="@+id/textViewWidgetHeader">
+
+        <ListView
+            android:id="@+id/listViewAccounts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:minHeight="100dp"/>
+
+        <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/no_summary_yet"/>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/textViewBalanceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/listViewAccounts"
+        android:layout_alignStart="@+id/content"
         android:layout_margin="8dp"
         android:text="@string/balance"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
     <TextView
         android:id="@+id/textViewBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/listViewAccounts"
+        android:layout_alignEnd="@+id/content"
         android:layout_alignParentBottom="true"
         android:layout_margin="8dp"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        tools:text="$2000.00" />
+        tools:text="$2000.00"/>
 </RelativeLayout>

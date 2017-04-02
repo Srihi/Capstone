@@ -113,20 +113,12 @@ public class SummaryFragment extends Fragment implements LoaderManager.LoaderCal
             accountsSummaries.clear();
             accountsSummaries.addAll(data);
             summaryAdapterAccounts.notifyDataSetChanged();
-            double balance = 0.0;
-            for (Summary summary : data) {
-                balance = balance + summary.getValue();
-            }
-            textViewBalance.setText(Utils.getAmountWithCurrency(balance));
+            Utils.setBalance(data, textViewBalance);
         } else {
             expensesSummaries.clear();
             expensesSummaries.addAll(data);
             summaryAdapterExpenses.notifyDataSetChanged();
-            double balance = 0.0;
-            for (Summary summary : data) {
-                balance = balance + summary.getValue();
-            }
-            textViewTotal.setText(Utils.getAmountWithCurrency(balance));
+            Utils.setBalance(data, textViewTotal);
         }
     }
 
