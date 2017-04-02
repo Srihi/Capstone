@@ -103,8 +103,6 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
 
     private double amountBefore = 0.0;
 
-    private boolean isAccountDataLoaded = false;
-
     private int postingSourceId = -1;
     private int postingDestinationId = -1;
 
@@ -509,7 +507,7 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
                 sourceAccountAdapter.swapCursor(data);
             }
         }
-        if (isEdit && !isAccountDataLoaded) {
+        if (isEdit) {
             if (selectedSourceAccount != -1) {
                 spinnerSourceAccount.setSelection(
                         sourceAccountAdapter.getSelectedAccountPosition(selectedSourceAccount));
@@ -520,6 +518,13 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
                         destinationAccountAdapter.getSelectedAccountPosition(selectedDestinationAccount));
             }
 
+        }else{
+
+            if (transactionType == TransactionTypes.EXPENSES) {
+                spinnerSourceAccount.setSelection(
+                        sourceAccountAdapter.getSelectedAccountPosition(Utils.getDefaultExpenseAccount
+                                (this)));
+            }
         }
     }
 

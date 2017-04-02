@@ -1,6 +1,7 @@
 package com.sanath.moneytracker.common;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.sanath.moneytracker.adapters.Summary;
 import com.sanath.moneytracker.data.DataContract;
+import com.sanath.moneytracker.ui.activities.AddTransactionActivity;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
@@ -121,5 +123,11 @@ public class Utils {
             balance = balance + summary.getValue();
         }
         return balance;
+    }
+
+    public static int getDefaultExpenseAccount(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constant.PREF, Context
+                .MODE_PRIVATE);
+        return Integer.valueOf(sharedPreferences.getString(Constant.DEFAULT_EXPENSE_ACCOUNT, "0"));
     }
 }

@@ -18,6 +18,7 @@ import com.sanath.moneytracker.data.DataContract;
 import com.sanath.moneytracker.ui.activities.AddTransactionActivity;
 import com.sanath.moneytracker.ui.fragments.AccountsFragment;
 import com.sanath.moneytracker.ui.fragments.CategoriesFragment;
+import com.sanath.moneytracker.ui.fragments.SettingFragment;
 import com.sanath.moneytracker.ui.fragments.SummaryFragment;
 import com.sanath.moneytracker.ui.fragments.TransactionsFragment;
 
@@ -104,30 +105,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-/*
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -158,6 +135,10 @@ public class MainActivity extends AppCompatActivity
                                 case R.id.nav_categories:
                                     fragment = CategoriesFragment.newInstance();
                                     setTitle(R.string.title_nav_categories);
+                                    break;
+                                case R.id.nav_settings:
+                                    fragment = SettingFragment.newInstance();
+                                    setTitle(R.string.title_nav_settings);
                                     break;
                             }
                             replaceFragment(fragment);

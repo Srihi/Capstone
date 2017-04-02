@@ -88,4 +88,7 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="no_summary_yet">No Summary yet</string>
+    <string name="pref_accounts_category_name">Accounts</string>
+    <string name="pref_title_default_expense_account">Expense Account</string>
+    <string name="pref_summary_default_expense_account">Select Default Expense Account</string>
 </resources>

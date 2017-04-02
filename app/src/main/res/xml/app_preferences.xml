@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.preference.PreferenceCategory
+        android:key="default_expense_account_category"
+        android:title="@string/pref_accounts_category_name"
+        />
+</android.support.v7.preference.PreferenceScreen>
