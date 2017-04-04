@@ -57,6 +57,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
             "or (account.type == 0 and journal.type == 1 and posting.credit_debit == 1)) " +
             "and period == ?)";
     private static final String KEY_SELECTED_TRANSACTION_TYPE = "key_selected_transaction_type";
+    private static final String TAG_FILTER_FRAGMENT = "filter_fragment";
 
     private Unbinder unbinder;
 
@@ -104,6 +105,15 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
         setHasOptionsMenu(true);
         if (savedInstanceState != null) {
             selectedTransactionsType = savedInstanceState.getInt(KEY_SELECTED_TRANSACTION_TYPE);
+            if (filterDialog == null) {
+                filterDialog = (FilterFragmentDialog) getChildFragmentManager().findFragmentByTag(TAG_FILTER_FRAGMENT);
+                if (filterDialog != null) {
+                    filterDialog.setFilterDismissListener(this);
+                    filterDialog.setFilterSelectedListener(this);
+                    filterDialog.setSelectedFilterType(selectedTransactionsType);
+                    toggleFilter = true;
+                }
+            }
         }
     }
 
@@ -224,7 +234,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
             filterDialog.setArguments(bundle);
             filterDialog.setFilterDismissListener(this);
             filterDialog.setFilterSelectedListener(this);
-            filterDialog.show(getChildFragmentManager(), filterDialog.getTag());
+            filterDialog.show(getChildFragmentManager(), TAG_FILTER_FRAGMENT);
 
         } else {
             //close
@@ -308,7 +318,7 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
     @Override
     public void onDismiss() {
         if (filterDialog != null) {
-            filterDialog.dismiss();
+            //filterDialog.dismiss();
             toggleFilter = !toggleFilter;
             filterDialog = null;
         }
@@ -318,7 +328,12 @@ public class TransactionsFragment extends Fragment implements View.OnClickListen
     public void onFilterSelected(int transactionTypes) {
         selectedTransactionsType = transactionTypes;
         getLoaderManager().restartLoader(TRANSACTION_LOADER, null, this);
-        onDismiss();
+        //onDismiss();
+        if (filterDialog != null) {
+            filterDialog.dismiss();
+            toggleFilter = !toggleFilter;
+            filterDialog = null;
+        }
     }
 
     @Override

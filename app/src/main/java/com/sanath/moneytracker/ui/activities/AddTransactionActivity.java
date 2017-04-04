@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -83,7 +84,7 @@ public class AddTransactionActivity extends AppCompatActivity implements LoaderM
     @BindView(R.id.adView)
     AdView adView;
     @BindView(R.id.activity_add_transaction)
-    ConstraintLayout root;
+    ScrollView root;
 
     private Unbinder unbinder;
 

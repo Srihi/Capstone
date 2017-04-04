@@ -161,6 +161,14 @@ public class FilterFragmentDialog extends BottomSheetDialogFragment implements V
         this.filterSelectedListener = filterSelectedListener;
     }
 
+    public int getSelectedFilterType() {
+        return selectedFilterType;
+    }
+
+    public void setSelectedFilterType(int selectedFilterType) {
+        this.selectedFilterType = selectedFilterType;
+    }
+
     public interface FilterDismissListener {
         void onDismiss();
     }
