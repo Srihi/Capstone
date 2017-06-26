@@ -313,6 +313,31 @@ public class AddCategoryActivity extends AppCompatActivity implements ColorChoos
         drawableCache.add(IconValue.RUN);
         drawableCache.add(IconValue.SUBWAY);
         drawableCache.add(IconValue.COFFEE);
+        drawableCache.add(IconValue.ACCOUNT);
+        drawableCache.add(IconValue.AMAZON);
+        drawableCache.add(IconValue.AMBULANCE);
+        drawableCache.add(IconValue.CAKE);
+        drawableCache.add(IconValue.TAXI);
+        drawableCache.add(IconValue.ITUNES);
+        drawableCache.add(IconValue.SATELLITE);
+        drawableCache.add(IconValue.MEDICAL_BAG);
+        drawableCache.add(IconValue.SPOTIFY);
+        drawableCache.add(IconValue.SIGNAL_4G);
+        drawableCache.add(IconValue.SIGNAL_HSPA);
+        drawableCache.add(IconValue.TENNIS);
+        drawableCache.add(IconValue.FOOTBALL);
+        drawableCache.add(IconValue.RUN);
+        drawableCache.add(IconValue.WORKER);
+        drawableCache.add(IconValue.XBOX);
+        drawableCache.add(IconValue.TRAM);
+        drawableCache.add(IconValue.LIGHTBULB);
+        drawableCache.add(IconValue.BABY);
+        drawableCache.add(IconValue.BIKE);
+        drawableCache.add(IconValue.BOOK);
+        drawableCache.add(IconValue.DUMBBELL);
+        drawableCache.add(IconValue.HUMAN_PREGNANT);
+        drawableCache.add(IconValue.PILL);
+        drawableCache.add(IconValue.SWIM);
     }
 
     private void addIncomeIcons() {
